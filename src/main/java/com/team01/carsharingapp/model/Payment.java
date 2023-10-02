@@ -49,12 +49,12 @@ public class Payment {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
-    static enum Status {
+    public enum Status {
         PENDING,
         PAID
     }
 
-    static enum Type {
+    public enum Type {
         PAYMENT,
         FINE
     }
