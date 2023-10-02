@@ -32,17 +32,17 @@ public class Payment {
     @OneToOne
     @Column(name = "rental_id", nullable = false)
     private Rental rental;
-    @Column(name = "session_url", nullable = false)
-    private String urlSession;
-    @Column(name = "session_id", nullable = false)
+    @Column(nullable = false)
+    private String sessionUrl;
+    @Column(nullable = false)
     private Long sessionId;
-    @Column(name = "price", nullable = false)
+    @Column(nullable = false)
     private BigDecimal price;
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false)
     private Status status;
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @Column(nullable = false)
     private Type type;
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
