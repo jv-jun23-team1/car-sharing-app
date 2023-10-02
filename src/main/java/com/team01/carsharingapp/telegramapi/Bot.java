@@ -21,9 +21,7 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().getText().equals("/start")) {
             sendMessage("Hello mate");
         } else {
-            sendMessage(
-                    "I'm here not to speak with u, i just send u notification when they arrived"
-            );
+            sendMessage("Unknown command");
         }
     }
 

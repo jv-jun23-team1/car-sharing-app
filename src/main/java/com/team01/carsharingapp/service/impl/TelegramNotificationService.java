@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class TelegramNotificationService implements NotificationService {
+public class    TelegramNotificationService implements NotificationService {
     private final Bot bot;
 
     @Override
-    public void sedNotification(String string) {
+    public void sendNotification(String string) {
         bot.sendMessage(string);
     }
 }
