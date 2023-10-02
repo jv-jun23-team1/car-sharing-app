@@ -26,18 +26,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserRegistrationResponseDto register(UserRegistrationRequestDto requestDto)
             throws RegistrationException {
-        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-            throw new RegistrationException("Can't register user with this email "
+        if (existInDataBase(requestDto.getEmail())) {
+            throw new RegistrationException("Can't register user with email: "
                     + requestDto.getEmail());
         }
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-        Role role = roleRepository.getRolesByName(Role.RoleName.CUSTOMER);
-        user.setRoles(Set.of(role));
+        user.setRoles(Set.of(roleRepository.getRolesByName(Role.RoleName.CUSTOMER)));
         return userMapper.toResponseDto(userRepository.save(user));
     }
 
     public User getCurrentUser() {
         return (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    private boolean existInDataBase(String username) {
+        return userRepository.findByEmail(username).isPresent();
     }
 }

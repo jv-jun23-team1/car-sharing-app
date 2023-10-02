@@ -1,6 +1,7 @@
 package com.team01.carsharingapp.config;
 
 import com.team01.carsharingapp.security.JwtAuthenticationFilter;
+import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +27,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(10, new SecureRandom());
     }
 
     @Bean

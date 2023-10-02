@@ -20,11 +20,14 @@ public class UserRegistrationRequestDto {
     private String password;
 
     @NotBlank(message = "required field")
+    @Size(min = 8, max = 50, message = "size must be between 8 and 50 character")
     private String repeatPassword;
 
     @NotBlank(message = "required field")
+    @Size(min = 2, max = 50, message = "size must be between 2 and 50 character")
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "required field")
+    @Size(min = 2, max = 50, message = "size must be between 2 and 50 character")
     private String lastName;
 }
