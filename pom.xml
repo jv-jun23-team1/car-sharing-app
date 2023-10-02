@@ -15,11 +15,13 @@
     <description>Car-Sharing-App</description>
     <properties>
         <java.version>17</java.version>
+        <telegram.version>6.8.0</telegram.version>
         <maven.checkstyle.plugin.configLocation>checkstyle.xml</maven.checkstyle.plugin.configLocation>
         <lombok.mapstruct.binding.version>0.2.0</lombok.mapstruct.binding.version>
         <testcontainers.version>1.19.0</testcontainers.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <jjwt.version>0.11.5</jjwt.version>
+        <tgelegram.version>6.8.0</tgelegram.version>
     </properties>
     <dependencies>
         <!--STARTERS-->
@@ -49,6 +51,11 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-spring-boot-starter</artifactId>
+            <version>${telegram.version}</version>
+        </dependency>
         <!--DEV/ADMIN-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -67,16 +74,6 @@
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>${liquibase.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-maven-plugin</artifactId>
-            <version>${liquibase.version}</version>
         </dependency>
         <!--LIBRARIES-->
         <dependency>
