@@ -44,11 +44,7 @@ public class CarServiceImpl implements CarService {
     @Transactional
     public CarDto update(Long id, CreateCarRequestDto request) {
         Car car = carById(id);
-        car.setModel(request.model());
-        car.setBrand(request.brand());
-        car.setType(Car.Type.valueOf(request.type()));
-        car.setAmountAvailable(request.amountAvailable());
-        car.setDailyFee(request.dailyFee());
+        updateValues(car, request);
         return carMapper.toDto(carRepository.save(car));
     }
 
@@ -56,7 +52,7 @@ public class CarServiceImpl implements CarService {
     @Transactional
     public void delete(Long id) {
         if (!carRepository.existsById(id)) {
-            throw new EntityNotFoundException("Can't find book by id: " + id);
+            throw new EntityNotFoundException("Can't find car by id: " + id);
         }
         carRepository.deleteById(id);
     }
@@ -65,5 +61,13 @@ public class CarServiceImpl implements CarService {
         return carRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find car by id: " + id)
         );
+    }
+
+    private void updateValues(Car car, CreateCarRequestDto request) {
+        car.setModel(request.model());
+        car.setBrand(request.brand());
+        car.setType(Car.Type.valueOf(request.type()));
+        car.setAmountAvailable(request.amountAvailable());
+        car.setDailyFee(request.dailyFee());
     }
 }
