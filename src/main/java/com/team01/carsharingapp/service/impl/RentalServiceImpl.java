@@ -51,9 +51,14 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalDto create(CreateRentalRequestDto requestDto) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Rental rental = createRental(requestDto, user);
-        carRepository.save(rental.getCar());
+        User user = (User) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        checkTime(requestDto.returnDate());
+        Rental rental = new Rental();
+        rental.setCar(createCar(requestDto.carId()));
+        rental.setUser(user);
+        rental.setRentalDate(LocalDate.now());
+        rental.setReturnDate(requestDto.returnDate());
         return rentalMapper.toDto(rentalRepository.save(rental));
     }
 
@@ -96,22 +101,20 @@ public class RentalServiceImpl implements RentalService {
         return rentalMapper.toDto(rentalRepository.save(rental));
     }
 
-    private Rental createRental(CreateRentalRequestDto requestDto, User user) {
-        if (requestDto.returnDate().isBefore(LocalDate.now())) {
-            throw new RentalException("Invalid return date = " + requestDto.returnDate());
-        }
-        Car car = carRepository.findById(requestDto.carId()).orElseThrow(() ->
-                new EntityNotFoundException("Can't find car by id = " + requestDto.carId()));
+    private Car createCar(Long carId) {
+        Car car = carRepository.findById(carId).orElseThrow(() ->
+                new EntityNotFoundException("Can't find car by id = " + carId));
         if (car.getAmountAvailable() < 1) {
-            throw new RentalException("No free cars by car id = " + requestDto.carId());
+            throw new RentalException("No free cars by car id = " + carId);
         }
         car.setAmountAvailable(car.getAmountAvailable() - 1);
-        Rental rental = new Rental();
-        rental.setCar(car);
-        rental.setRentalDate(LocalDate.now());
-        rental.setUser(user);
-        rental.setReturnDate(requestDto.returnDate());
-        return rental;
+        return carRepository.save(car);
+    }
+
+    private void checkTime(LocalDate localDate) {
+        if (localDate.isBefore(LocalDate.now())) {
+            throw new RentalException("Invalid return date = " + localDate);
+        }
     }
 
     private boolean isManager(User user) {
