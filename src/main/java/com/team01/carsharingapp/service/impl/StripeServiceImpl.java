@@ -28,9 +28,6 @@ public class StripeServiceImpl implements StripeService {
                 .setCancelUrl("cancelUrl")
                 .setCurrency(currency)
                 .build();
-
-        PaymentIntentCreateParams params1 = PaymentIntentCreateParams.builder()
-                .setPa
         try {
             Session session = Session.create(params);
         }
