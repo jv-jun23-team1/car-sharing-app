@@ -8,13 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Query("""
            FROM Rental r
            LEFT JOIN FETCH r.user u
            LEFT JOIN FETCH r.car c
-           WHERE u.id = :userId 
+           WHERE u.id = :userId
            AND r.id = :id
             """)
     Optional<Rental> findByIdAndUserId(Long id, Long userId);

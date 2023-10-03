@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record CreateRentalRequestDto(
-        @NotBlank LocalDate returnDate,
-        @NotNull Long carId
+        @NotNull
+        LocalDate returnDate,
+        @NotNull
+        Long carId
 ) {
 }
