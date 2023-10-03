@@ -15,10 +15,10 @@ public record CreateCarRequestDto(
         @NotBlank(message = "type can't be null")
         @Size(min = 3, max = 10, message = "type should be between 3 and 10 characters")
         String type,
-        @NotBlank(message = "amount available can't be null")
+        //@NotBlank(message = "amount available can't be null")
         @Min(value = 0, message = "amount available can't be less than 0")
         int amountAvailable,
-        @NotBlank(message = "daily fee can't be null")
+        //@NotBlank(message = "daily fee can't be null")
         @Min(value = 0, message = "daily fee can't be less than 0")
         BigDecimal dailyFee) {
 }
