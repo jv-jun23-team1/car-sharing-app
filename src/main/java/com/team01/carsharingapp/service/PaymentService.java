@@ -5,7 +5,7 @@ import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
 import java.util.List;
 
 public interface PaymentService {
-    PaymentDto createPayment(PaymentRequestDto paymentRequestDto);
+    PaymentDto createPayment(PaymentRequestDto requestDto);
 
     PaymentDto getPayments();
 
