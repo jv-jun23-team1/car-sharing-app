@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface RentalService {
-    RentalDto getByRentalIdAndUser(Long rentalId);
+    RentalDto getById(Long rentalId);
 
     RentalDto create(CreateRentalRequestDto requestDto);
 

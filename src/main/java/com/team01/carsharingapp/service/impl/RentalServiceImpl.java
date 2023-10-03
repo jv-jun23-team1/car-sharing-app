@@ -29,7 +29,7 @@ public class RentalServiceImpl implements RentalService {
     private final CarRepository carRepository;
 
     @Override
-    public RentalDto getByRentalIdAndUser(Long rentalId) {
+    public RentalDto getById(Long rentalId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Rental rental;
         if (isManager(user)) {

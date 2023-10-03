@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,12 +25,11 @@ public class RentalController {
     public RentalDto getById(
             @PathVariable Long id
     ) {
-        return rentalService.getByRentalIdAndUser(id);
+        return rentalService.getById(id);
     }
 
     @GetMapping("/")
     public List<RentalDto> getByUserIdAndStatus(
-            Authentication authentication,
             @RequestParam(name = "user_id") Long userId,
             @RequestParam(name = "is_active") Boolean isActive,
             Pageable pageable
@@ -41,16 +39,14 @@ public class RentalController {
 
     @PostMapping
     public RentalDto create(
-            @RequestBody @Valid CreateRentalRequestDto requestDto,
-            Authentication authentication
+            @RequestBody @Valid CreateRentalRequestDto requestDto
     ) {
         return rentalService.create(requestDto);
     }
 
     @PostMapping("/return/{id}")
     public RentalDto returnCarByRentalId(
-            @PathVariable Long id,
-            Authentication authentication
+            @PathVariable Long id
     ) {
         return rentalService.returnCarByRentalId(id);
     }
