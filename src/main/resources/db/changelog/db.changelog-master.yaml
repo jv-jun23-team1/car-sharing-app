@@ -11,3 +11,7 @@ databaseChangeLog:
       file: db/changelog/changes/05-create-rentals-table.yaml
   - include:
       file: db/changelog/changes/06-create-payments-table.yaml
+  - include:
+      file: db/changelog/changes/07-insert-roles.yaml
+  - include:
+      file: db/changelog/changes/08-insert-manager-user.yaml
