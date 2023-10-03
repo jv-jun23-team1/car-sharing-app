@@ -2,6 +2,8 @@ package com.team01.carsharingapp.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,7 +30,8 @@ public class Car {
     private String model;
     @Column(nullable = false)
     private String brand;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Type type;
     private int amountAvailable;
     @Column(nullable = false)
