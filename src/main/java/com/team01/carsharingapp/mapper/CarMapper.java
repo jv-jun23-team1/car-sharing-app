@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 @Mapper(config = MapperConfig.class)
 public interface CarMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "isDeleted", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     Car toEntity(CreateCarRequestDto request);
 
     CarDto toDto(Car car);
