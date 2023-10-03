@@ -5,6 +5,7 @@ import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
 import com.team01.carsharingapp.mapper.PaymentMapper;
 import com.team01.carsharingapp.model.Car;
 import com.team01.carsharingapp.model.Rental;
+import com.team01.carsharingapp.repository.payment.PaymentRepository;
 import com.team01.carsharingapp.service.PaymentService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class PaymentServiceImpl implements PaymentService {
+    private PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final Object rentalService;
 
@@ -46,7 +48,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentDto> getPaymentsByUserId(Long userId) {
-        return List.of(new PaymentDto());
+        return paymentRepository.findAllByUserId(userId).stream()
+                .map(paymentMapper::toDto)
+                .toList();
     }
 
     private BigDecimal calculateRentalCost(LocalDate startDate,
