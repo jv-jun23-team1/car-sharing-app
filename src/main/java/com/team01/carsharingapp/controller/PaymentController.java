@@ -26,20 +26,19 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentDto> createPayment(@RequestBody PaymentRequestDto paymentRequestDto) {
+    public ResponseEntity<PaymentDto> createPayment(
+            @RequestBody PaymentRequestDto paymentRequestDto) {
         PaymentDto paymentDto = paymentService.createPayment(paymentRequestDto);
         return ResponseEntity.ok(paymentDto);
     }
 
     @GetMapping("/success")
     public ResponseEntity<String> checkSuccessfulPayments() {
-        // You can handle successful payments logic here, e.g., checking with Stripe
         return ResponseEntity.ok("Payment successful!");
     }
 
     @GetMapping("/cancel")
     public ResponseEntity<String> returnPaymentPausedMessage() {
-        // Handle payment cancellation logic here, e.g., returning a message
         return ResponseEntity.ok("Payment paused");
     }
 }
