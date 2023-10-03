@@ -43,6 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
             BigDecimal convertCent = new BigDecimal(CONVERT_CENT);
             payment.setPrice(amount.divide(convertCent, 2, RoundingMode.HALF_UP));
             payment.setType(Payment.Type.valueOf(paymentRequestDto.type()));
+            //Not finished
 
         } catch (StripeException e) {
             e.getMessage();
