@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -21,7 +20,6 @@ import org.hibernate.annotations.Where;
 @Table(name = "cars")
 @Where(clause = "is_deleted = false")
 @SQLDelete(sql = "UPDATE cars SET is_deleted = true WHERE id=?")
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Car {
@@ -39,7 +37,6 @@ public class Car {
     @Column(nullable = false)
     private BigDecimal dailyFee;
     @Column(nullable = false)
-    @Builder.Default
     private boolean isDeleted = false;
 
     public enum Type {
