@@ -7,8 +7,6 @@ import java.math.BigDecimal;
 public record PaymentRequestDto(@NotBlank
                                 Long rentalId,
                                 @NotBlank
-                                BigDecimal price,
-                                @NotBlank
                                 @Size(min = 2, max = 3)
                                 String currency,
                                 @NotBlank
