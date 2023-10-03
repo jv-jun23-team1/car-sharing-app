@@ -49,7 +49,9 @@ public class PaymentServiceImpl implements PaymentService {
         return List.of(new PaymentDto());
     }
 
-    private BigDecimal calculateRentalCost(LocalDate startDate, LocalDate endDate, BigDecimal dailyRate) {
+    private BigDecimal calculateRentalCost(LocalDate startDate,
+                                           LocalDate endDate,
+                                           BigDecimal dailyRate) {
         long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
         return dailyRate.multiply(BigDecimal.valueOf(numberOfDays));
     }
