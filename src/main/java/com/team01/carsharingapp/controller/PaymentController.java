@@ -26,7 +26,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    public PaymentDto createPayment(
+    public String createPayment(
             @RequestBody PaymentRequestDto requestDto) {
         return paymentService.createPayment(requestDto);
     }

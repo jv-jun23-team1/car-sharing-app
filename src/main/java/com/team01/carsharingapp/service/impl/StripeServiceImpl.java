@@ -2,10 +2,13 @@ package com.team01.carsharingapp.service.impl;
 
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
+import com.stripe.model.checkout.Session;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.checkout.SessionCreateParams;
 import com.team01.carsharingapp.service.StripeService;
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,19 +18,20 @@ public class StripeServiceImpl implements StripeService {
     private String stripeSecretKey;
 
     @Override
-    public void pay() {
+    public void pay(BigDecimal totalPrice, String currency, String type) {
         Stripe.apiKey = stripeSecretKey;
-
-        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAmount(0L)
-                .setCurrency("usd")
-                .setDescription("Car rental payment")
-                .addPaymentMethodType("cart")
+        Long totalAmount = totalPrice.multiply(BigDecimal.valueOf(100)).longValue();
+        SessionCreateParams params = SessionCreateParams.builder()
+                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .setSuccessUrl("successUrl")
+                .setCancelUrl("cancelUrl")
+                .setCurrency(currency)
                 .build();
         try {
-            PaymentIntent paymentIntent = PaymentIntent.create(params);
-            String paymentIntentId = paymentIntent.getId();
-        } catch (StripeException e) {
+            Session session = Session.create(params);
+        }
+        catch (StripeException e) {
             e.getMessage();
         }
     }

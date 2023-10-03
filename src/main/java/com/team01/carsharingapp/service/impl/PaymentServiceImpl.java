@@ -24,7 +24,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final Object rentalService;
 
     @Override
-    public PaymentDto createPayment(PaymentRequestDto requestDto) {
+    public String createPayment(PaymentRequestDto requestDto) {
         //create test entity rental
         Rental currentRental = new Rental();
         currentRental.setId(requestDto.rentalId());
@@ -40,7 +40,8 @@ public class PaymentServiceImpl implements PaymentService {
                 currentRental.getCar().getDailyFee());
         String currentCurrency = requestDto.currency();
         String currentType = requestDto.type();
-        return new PaymentDto();
+        stripeService.pay(totalPrice, currentCurrency, currentType);
+        return "";
     }
 
     @Override
