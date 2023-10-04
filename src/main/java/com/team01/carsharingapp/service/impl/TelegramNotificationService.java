@@ -1,10 +1,12 @@
 package com.team01.carsharingapp.service.impl;
 
+import com.team01.carsharingapp.dto.rental.CreateRentalEvent;
 import com.team01.carsharingapp.model.Rental;
 import com.team01.carsharingapp.repository.RentalRepository;
 import com.team01.carsharingapp.service.NotificationService;
 import com.team01.carsharingapp.telegramapi.Bot;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +14,6 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +21,9 @@ import java.util.stream.Collectors;
 public class TelegramNotificationService implements NotificationService {
     private static final String NO_OVERDUE_MESSAGE = "No rentals overdue today!";
     private static final String OVERDUE_MESSAGE = "Customer - %s, expected return date - %s, car - %s";
+
+    private static final String CREATE_RENTAL_MESSAGE = "NEW RENTAL : Customer - %s, expected return date - %s, car - %s";
+    private static final String CORN = "0 0 12 * * ?";
     private final Bot bot;
     private final RentalRepository rentalRepository;
 
@@ -29,12 +33,24 @@ public class TelegramNotificationService implements NotificationService {
     }
 
 
-    @Scheduled(cron = "0 0 12 * * ?")
+    @Scheduled(initialDelay = 10000)
     private void sendDailyStatistic() {
         LocalDate date = LocalDate.now().plusDays(1);
         List<Rental> overdue = rentalRepository.findAllOverdue(date);
         String message = overdue.isEmpty() ? NO_OVERDUE_MESSAGE : buildOverdueMessage(overdue);
         sendNotification(message);
+    }
+
+    @EventListener
+    private void sendCreatedRental(CreateRentalEvent createRentalEvent) {
+        sendNotification(buildCreatedRentalMessage(createRentalEvent.getRental()));
+    }
+
+    private String buildCreatedRentalMessage(Rental rental) {
+        String user = rental.getUser().getEmail();
+        String date = rental.getReturnDate().toString();
+        String car = rental.getCar().getBrand() + " " + rental.getCar().getModel();
+        return String.format(OVERDUE_MESSAGE, user, date, car);
     }
 
     private String buildOverdueMessage(List<Rental> overdue) {
