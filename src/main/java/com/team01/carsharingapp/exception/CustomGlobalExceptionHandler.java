@@ -67,6 +67,15 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(TelegramException.class)
+    public ResponseEntity<Object> handleTelegramException(
+            TelegramException ex) {
+        ExceptionBody body = new ExceptionBody(LocalDateTime.now(),
+                HttpStatus.FAILED_DEPENDENCY,
+                List.of(ex.getMessage()));
+        return new ResponseEntity<>(body, HttpStatus.FAILED_DEPENDENCY);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleOtherExceptions(Exception ex) {
         ExceptionBody body = new ExceptionBody(LocalDateTime.now(),
