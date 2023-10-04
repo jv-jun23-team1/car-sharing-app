@@ -23,7 +23,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: session_url
-                  type: varchar(255)
+                  type: varchar(600)
                   constraints:
                     nullable: false
               - column:

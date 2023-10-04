@@ -33,7 +33,7 @@ public class RentalServiceImpl implements RentalService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Rental rental;
         if (isManager(user)) {
-            rental = rentalRepository.findById(rentalId).orElseThrow(() ->
+            rental = rentalRepository.findByIdWithFetch(rentalId).orElseThrow(() ->
                     new EntityNotFoundException(
                             "Can't find rental by id = " + rentalId)
             );
@@ -120,7 +120,7 @@ public class RentalServiceImpl implements RentalService {
     private boolean isManager(User user) {
         Optional<Role.RoleName> manager = user.getRoles().stream()
                 .map(Role::getName)
-                .filter(r -> r == Role.RoleName.MANAGER)
+                .filter(r -> r == Role.RoleName.ROLE_MANAGER)
                 .findFirst();
         return manager.isPresent();
     }

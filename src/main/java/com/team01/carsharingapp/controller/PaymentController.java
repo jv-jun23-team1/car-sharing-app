@@ -7,6 +7,7 @@ import com.team01.carsharingapp.service.PaymentService;
 import com.team01.carsharingapp.service.StripeService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ public class PaymentController {
         return paymentService.createPayment(requestDto);
     }
 
+    @Transactional
     @GetMapping("/success")
     public String checkSuccessfulPayments(@RequestParam String sessionId) {
         Payment payment = paymentService.getPaymentBySessionId(sessionId);

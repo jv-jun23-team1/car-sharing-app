@@ -1,9 +1,9 @@
 package com.team01.carsharingapp.service.impl;
 
-import com.stripe.exception.StripeException;
 import com.team01.carsharingapp.dto.payment.PaymentDto;
 import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
 import com.team01.carsharingapp.dto.stripe.StripeDto;
+import com.team01.carsharingapp.exception.EntityNotFoundException;
 import com.team01.carsharingapp.mapper.PaymentMapper;
 import com.team01.carsharingapp.model.Car;
 import com.team01.carsharingapp.model.Payment;
@@ -23,41 +23,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class PaymentServiceImpl implements PaymentService {
     private static final String CURRENCY = "usd";
-    private PaymentRepository paymentRepository;
-    private RentalRepository rentalRepository;
+    private final PaymentRepository paymentRepository;
+    private final RentalRepository rentalRepository;
     private final PaymentMapper paymentMapper;
     private final StripeService stripeService;
 
     @Override
     public PaymentDto createPayment(PaymentRequestDto requestDto) {
-        //create test entity rental
-        Rental currentRental = new Rental();
-        currentRental.setId(requestDto.rentalId());
-        Car currentCar = new Car();
-        currentCar.setModel("AudiV8");
-        currentCar.setDailyFee(BigDecimal.valueOf(20.0));
-        currentRental.setCar(currentCar);
-        currentRental.setRentalDate(LocalDate.now());
-        currentRental.setReturnDate(LocalDate.now().plusDays(3));
-        //Values for stripe
-        BigDecimal totalPrice = calculateRentalCost(
-                currentRental.getRentalDate(),
-                currentRental.getReturnDate(),
-                currentRental.getCar().getDailyFee());
-        String currentType = requestDto.type();
-        Payment payment = paymentMapper.toEntity(requestDto);
-        payment.setRental(currentRental);
-        payment.setType(Payment.Type.valueOf(requestDto.type()));
-        payment.setStatus(Payment.Status.PENDING);
-        payment.setPrice(totalPrice);
-        try {
-            StripeDto sessionInfo = stripeService.pay(currentCar.getModel(),
-                    totalPrice, CURRENCY, currentType);
-            payment.setSessionUrl(sessionInfo.getSessionUrl());
-            payment.setSessionId(sessionInfo.getSessionId());
-        } catch (StripeException e) {
-            throw new RuntimeException(e);
-        }
+        Rental rentalById = rentalRepository.findByIdWithFetch(requestDto.rentalId()).orElseThrow(
+                () -> new EntityNotFoundException("Rental with id: "
+                        + requestDto.rentalId() + " not exist")
+        );
+        Payment payment = createPaymentEntity(rentalById, requestDto);
+
+        StripeDto sessionInfo = stripeService.pay(payment, CURRENCY);
+        payment.setSessionUrl(sessionInfo.getSessionUrl());
+        payment.setSessionId(sessionInfo.getSessionId());
+
         return paymentMapper.toDto(paymentRepository.save(payment));
     }
 
@@ -88,5 +70,20 @@ public class PaymentServiceImpl implements PaymentService {
                                            BigDecimal dailyRate) {
         long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
         return dailyRate.multiply(BigDecimal.valueOf(numberOfDays));
+    }
+
+    private Payment createPaymentEntity(Rental rentalById,
+                                        PaymentRequestDto requestDto) {
+        Payment payment = paymentMapper.toEntity(requestDto);
+        Car carFromRental = rentalById.getCar();
+        BigDecimal totalPrice = calculateRentalCost(
+                rentalById.getRentalDate(),
+                rentalById.getReturnDate(),
+                carFromRental.getDailyFee());
+        payment.setRental(rentalById);
+        payment.setType(Payment.Type.valueOf(requestDto.type()));
+        payment.setStatus(Payment.Status.PENDING);
+        payment.setPrice(totalPrice);
+        return payment;
     }
 }

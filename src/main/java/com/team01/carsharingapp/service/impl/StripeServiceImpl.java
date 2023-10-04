@@ -10,6 +10,7 @@ import com.stripe.param.ProductCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.team01.carsharingapp.dto.stripe.StripeDto;
 import com.team01.carsharingapp.exception.PaymentException;
+import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.service.StripeService;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -28,14 +29,12 @@ public class StripeServiceImpl implements StripeService {
     private String stripeSecretKey;
 
     @Override
-    public StripeDto pay(String productName,
-                         BigDecimal totalPrice,
-                         String currency,
-                         String type)
-            throws StripeException {
+    public StripeDto pay(Payment payment,
+                         String currency) {
         Stripe.apiKey = stripeSecretKey;
-        Long totalAmount = totalPrice.multiply(BigDecimal.valueOf(CONVERT_CENT)).longValue();
-        Product product = createProduct(productName);
+        Long totalAmount = payment.getPrice()
+                .multiply(BigDecimal.valueOf(CONVERT_CENT)).longValue();
+        Product product = createProduct(payment.getRental().getCar().getModel());
         Price price = createPrice(product, totalAmount, currency);
         Session session = createSession(price);
         StripeDto stripeDto = new StripeDto();
