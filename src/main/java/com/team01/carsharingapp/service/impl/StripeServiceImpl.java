@@ -24,6 +24,8 @@ public class StripeServiceImpl implements StripeService {
     private static final Long EXPIRATION_TIME = Instant.now().getEpochSecond() + 86400L;
     private static final String URL_API = "http://localhost:8080/api/payment";
     private static final String SUCCESS_ENDPOINT = "/success";
+    private static final String SUCCESS_ADDITIONAL_PARAMS
+            = "?sessionId={CHECKOUT_SESSION_ID}";
     private static final String CANCEL_ENDPOINT = "/cancel";
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
@@ -84,7 +86,7 @@ public class StripeServiceImpl implements StripeService {
                 .setExpiresAt(EXPIRATION_TIME)
                 .setSuccessUrl(URL_API
                         + SUCCESS_ENDPOINT
-                        + "?sessionId={CHECKOUT_SESSION_ID}")
+                        + SUCCESS_ADDITIONAL_PARAMS)
                 .setCancelUrl(URL_API + CANCEL_ENDPOINT)
                 .build();
         Session session;
