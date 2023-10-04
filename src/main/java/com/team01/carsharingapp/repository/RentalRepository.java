@@ -21,6 +21,14 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
            FROM Rental r
            LEFT JOIN FETCH r.user u
            LEFT JOIN FETCH r.car c
+           WHERE r.id = :id
+            """)
+    Optional<Rental> findByIdWithFetch(Long id);
+
+    @Query("""
+           FROM Rental r
+           LEFT JOIN FETCH r.user u
+           LEFT JOIN FETCH r.car c
            WHERE (:isActive = true AND r.actualReturnDate IS NULL)
            OR (:isActive = false AND r.actualReturnDate IS NOT NULL)
             """)
