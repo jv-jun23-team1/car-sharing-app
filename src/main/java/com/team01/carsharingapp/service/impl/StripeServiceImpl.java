@@ -31,8 +31,7 @@ public class StripeServiceImpl implements StripeService {
     private String stripeSecretKey;
 
     @Override
-    public StripeDto pay(Payment payment,
-                         String currency) {
+    public StripeDto pay(Payment payment, String currency) {
         Stripe.apiKey = stripeSecretKey;
         Long totalAmount = payment.getPrice()
                 .multiply(BigDecimal.valueOf(CONVERT_CENT)).longValue();

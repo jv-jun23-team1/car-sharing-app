@@ -4,7 +4,6 @@ import com.team01.carsharingapp.dto.payment.PaymentDto;
 import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
 import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.service.PaymentService;
-import com.team01.carsharingapp.service.StripeService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,6 @@ public class PaymentController {
     private static final String PAYMENT_SUCCESS = "Payment successful!";
     private static final String PAYMENT_CANCEL = "Payment canceled!";
     private final PaymentService paymentService;
-    private final StripeService stripeService;
 
     @GetMapping
     public List<PaymentDto> getPayments(@RequestParam("user_id") Long userId) {

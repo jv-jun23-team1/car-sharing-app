@@ -24,8 +24,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private static final String AUTH_ENDPOINT = "/auth/**";
     private static final String SWAGGER_ENDPOINT = "/swagger-ui/**";
-    private static final String DOCS_ENDPOINT = "/v3-api.docs/**";
-    private static final String ERROR_ENDPOINT = "/error/**";
     private static final String SUCCESS_ENDPOINT = "/payment/success/**";
     private static final String CANCEL_ENDPOINT = "/payment/cancel/**";
     private final UserDetailsService userDetailsService;
@@ -45,8 +43,6 @@ public class SecurityConfig {
                         auth -> auth
                                 .requestMatchers(AUTH_ENDPOINT,
                                         SWAGGER_ENDPOINT,
-                                        DOCS_ENDPOINT,
-                                        ERROR_ENDPOINT,
                                         SUCCESS_ENDPOINT,
                                         CANCEL_ENDPOINT)
                                 .permitAll()

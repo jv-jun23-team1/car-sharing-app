@@ -5,7 +5,6 @@ import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
 import com.team01.carsharingapp.dto.stripe.StripeDto;
 import com.team01.carsharingapp.exception.EntityNotFoundException;
 import com.team01.carsharingapp.mapper.PaymentMapper;
-import com.team01.carsharingapp.model.Car;
 import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.model.Rental;
 import com.team01.carsharingapp.repository.PaymentRepository;
@@ -30,8 +29,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDto createPayment(PaymentRequestDto requestDto) {
-        Rental rentalById = rentalRepository.findByIdWithFetch(requestDto.rentalId()).orElseThrow(
-                () -> new EntityNotFoundException("Rental with id: "
+        Rental rentalById = rentalRepository
+                .findByIdWithFetch(requestDto.rentalId()).orElseThrow(
+                        () -> new EntityNotFoundException("Rental with id: "
                         + requestDto.rentalId() + " not exist")
         );
         Payment payment = createPaymentEntity(rentalById, requestDto);
@@ -57,7 +57,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Payment getPaymentBySessionId(String sessionId) {
-        return paymentRepository.findBySessionId(sessionId);
+        return paymentRepository.findBySessionId(sessionId).orElseThrow(
+                () -> new EntityNotFoundException("Payment with session id: "
+                        + sessionId + " not found!")
+        );
     }
 
     @Override
@@ -75,11 +78,10 @@ public class PaymentServiceImpl implements PaymentService {
     private Payment createPaymentEntity(Rental rentalById,
                                         PaymentRequestDto requestDto) {
         Payment payment = paymentMapper.toEntity(requestDto);
-        Car carFromRental = rentalById.getCar();
         BigDecimal totalPrice = calculateRentalCost(
                 rentalById.getRentalDate(),
                 rentalById.getReturnDate(),
-                carFromRental.getDailyFee());
+                rentalById.getCar().getDailyFee());
         payment.setRental(rentalById);
         payment.setType(Payment.Type.valueOf(requestDto.type()));
         payment.setStatus(Payment.Status.PENDING);
