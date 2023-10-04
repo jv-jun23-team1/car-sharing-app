@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 public class PaymentServiceImpl implements PaymentService {
     private PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
-    private final Object rentalService;
 
     @Override
     public PaymentDto createPayment(PaymentRequestDto requestDto) {
