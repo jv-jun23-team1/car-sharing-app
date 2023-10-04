@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -66,8 +65,8 @@ public class RentalServiceImpl implements RentalService {
     ) {
         List<Rental> rentals;
         if (isManager(user)) {
-            rentals = userId == null ?
-                    rentalRepository.findAllByStatus(isActive, pageable) :
+            rentals = userId == null
+                    ? rentalRepository.findAllByStatus(isActive, pageable) :
                     rentalRepository.findAllByUserIdAndStatus(userId, isActive, pageable);
         } else {
             if (userId != null || Objects.equals(userId, user.getId())) {

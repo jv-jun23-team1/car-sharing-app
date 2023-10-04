@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -85,7 +84,8 @@ public class RentalServiceTest {
                 .thenReturn(rentals);
         when(rentalMapper.toDto(any(Rental.class))).thenReturn(rentalDto);
 
-        List<RentalDto> actual = rentalService.getByUserIdAndStatus(user, user.getId(), true, pageable);
+        List<RentalDto> actual = rentalService.getByUserIdAndStatus(
+                user, user.getId(), true, pageable);
 
         assertEquals(expected, actual);
     }
@@ -97,7 +97,8 @@ public class RentalServiceTest {
         Car car = getValidCar();
         User user = getValidUser();
 
-        when(rentalRepository.findByIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.of(rental));
+        when(rentalRepository.findByIdAndUserId(
+                anyLong(), anyLong())).thenReturn(Optional.of(rental));
         when(carRepository.save(any(Car.class))).thenReturn(car);
         when(rentalRepository.save(any(Rental.class))).thenReturn(rental);
         when(rentalMapper.toDto(any(Rental.class))).thenReturn(expected);

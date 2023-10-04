@@ -11,7 +11,11 @@ public interface RentalService {
 
     RentalDto create(User user, CreateRentalRequestDto requestDto);
 
-    List<RentalDto> getByUserIdAndStatus(User user, Long userId, boolean isActive, Pageable pageable);
+    List<RentalDto> getByUserIdAndStatus(
+            User user,
+            Long userId,
+            boolean isActive,
+            Pageable pageable);
 
     RentalDto carReturnByRentalId(User user, Long id);
 }
