@@ -18,6 +18,7 @@ public record CreateCarRequestDto(
         String type,
         @Min(value = 0, message = "amount available can't be less than 0")
         int amountAvailable,
+        @NotNull(message = "daily fee can't be null")
         @Min(value = 0, message = "daily fee can't be less than 0")
         BigDecimal dailyFee) {
 }
