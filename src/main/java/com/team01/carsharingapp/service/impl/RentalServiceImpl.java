@@ -75,7 +75,7 @@ public class RentalServiceImpl implements RentalService {
                     ? rentalRepository.findAllByStatus(isActive, pageable) :
                     rentalRepository.findAllByUserIdAndStatus(userId, isActive, pageable);
         } else {
-            if (userId != null || Objects.equals(userId, user.getId())) {
+            if (Objects.equals(userId, user.getId())) {
                 throw new RentalException("User role hasn't opportunity for this");
             }
             rentals = rentalRepository
