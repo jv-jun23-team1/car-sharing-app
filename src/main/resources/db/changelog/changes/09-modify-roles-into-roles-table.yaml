@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: modify-roles-into-roles
+      author: Ihor Kalaur
+      changes:
+        - update:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: ROLE_MANAGER
+            where: name = 'MANAGER'
+        - update:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: ROLE_CUSTOMER
+            where: name = 'CUSTOMER'
