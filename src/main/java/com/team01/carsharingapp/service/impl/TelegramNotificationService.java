@@ -25,7 +25,6 @@ public class TelegramNotificationService implements NotificationService {
             "Customer - %s, expected return date - %s, car - %s";
     private static final String CREATE_RENTAL_MESSAGE =
             "NEW RENTAL : Customer - %s, expected return date - %s, car - %s";
-    private static final String CRON = "0 0 12 * * ?";
     private final Bot bot;
     private final RentalRepository rentalRepository;
 
@@ -34,7 +33,7 @@ public class TelegramNotificationService implements NotificationService {
         bot.sendMessage(string);
     }
 
-    @Scheduled(cron = CRON)
+    @Scheduled(cron = "0 0 12 * * ?")
     private void sendDailyStatistic() {
         LocalDate date = LocalDate.now().plusDays(1);
         List<Rental> overdue = rentalRepository.findAllOverdue(date);
@@ -48,25 +47,25 @@ public class TelegramNotificationService implements NotificationService {
     }
 
     private String buildCreatedRentalMessage(Rental rental) {
-        String user = rental.getUser().getEmail();
-        String date = rental.getReturnDate().toString();
+        String email = rental.getUser().getEmail();
+        String returnDate = rental.getReturnDate().toString();
         String car = rental.getCar().getBrand() + " " + rental.getCar().getModel();
-        return String.format(CREATE_RENTAL_MESSAGE, user, date, car);
+        return String.format(CREATE_RENTAL_MESSAGE, email, returnDate, car);
     }
 
     private String buildOverdueMessage(List<Rental> overdue) {
         Function<Rental, String> buildMessage = r -> {
-            String user = r.getUser().getEmail();
-            String date = r.getReturnDate().toString();
+            String email = r.getUser().getEmail();
+            String returnDate = r.getReturnDate().toString();
             String car = r.getCar().getBrand() + " " + r.getCar().getModel();
-            return String.format(OVERDUE_MESSAGE, user, date, car);
+            return String.format(OVERDUE_MESSAGE, email, returnDate, car);
         };
         Comparator<Rental> comparator = (f, s) -> {
-            if (f.getReturnDate().isBefore(s.getRentalDate())) {
-                return 1;
-            }
-            if (f.getReturnDate().isAfter(s.getRentalDate())) {
+            if (f.getReturnDate().isBefore(s.getReturnDate())) {
                 return -1;
+            }
+            if (f.getReturnDate().isAfter(s.getReturnDate())) {
+                return 1;
             }
             return 0;
         };

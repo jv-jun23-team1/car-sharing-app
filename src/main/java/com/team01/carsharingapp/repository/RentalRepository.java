@@ -50,7 +50,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
            LEFT JOIN FETCH r.car c
            LEFT JOIN FETCH r.user u
            WHERE r.actualReturnDate IS NULL
-           AND r.rentalDate > :date
+           AND r.returnDate <= :date
                """)
     List<Rental> findAllOverdue(LocalDate date);
 }
