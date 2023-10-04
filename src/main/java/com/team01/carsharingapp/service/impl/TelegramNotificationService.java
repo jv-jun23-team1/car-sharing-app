@@ -5,25 +5,27 @@ import com.team01.carsharingapp.model.Rental;
 import com.team01.carsharingapp.repository.RentalRepository;
 import com.team01.carsharingapp.service.NotificationService;
 import com.team01.carsharingapp.telegramapi.Bot;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@EnableScheduling
 public class TelegramNotificationService implements NotificationService {
     private static final String NO_OVERDUE_MESSAGE = "No rentals overdue today!";
-    private static final String OVERDUE_MESSAGE = "Customer - %s, expected return date - %s, car - %s";
-
-    private static final String CREATE_RENTAL_MESSAGE = "NEW RENTAL : Customer - %s, expected return date - %s, car - %s";
-    private static final String CORN = "0 0 12 * * ?";
+    private static final String OVERDUE_MESSAGE =
+            "Customer - %s, expected return date - %s, car - %s";
+    private static final String CREATE_RENTAL_MESSAGE =
+            "NEW RENTAL : Customer - %s, expected return date - %s, car - %s";
+    private static final String CRON = "0 0 12 * * ?";
     private final Bot bot;
     private final RentalRepository rentalRepository;
 
@@ -32,8 +34,7 @@ public class TelegramNotificationService implements NotificationService {
         bot.sendMessage(string);
     }
 
-
-    @Scheduled(initialDelay = 10000)
+    @Scheduled(cron = CRON)
     private void sendDailyStatistic() {
         LocalDate date = LocalDate.now().plusDays(1);
         List<Rental> overdue = rentalRepository.findAllOverdue(date);
@@ -50,7 +51,7 @@ public class TelegramNotificationService implements NotificationService {
         String user = rental.getUser().getEmail();
         String date = rental.getReturnDate().toString();
         String car = rental.getCar().getBrand() + " " + rental.getCar().getModel();
-        return String.format(OVERDUE_MESSAGE, user, date, car);
+        return String.format(CREATE_RENTAL_MESSAGE, user, date, car);
     }
 
     private String buildOverdueMessage(List<Rental> overdue) {
@@ -58,7 +59,7 @@ public class TelegramNotificationService implements NotificationService {
             String user = r.getUser().getEmail();
             String date = r.getReturnDate().toString();
             String car = r.getCar().getBrand() + " " + r.getCar().getModel();
-                return String.format(OVERDUE_MESSAGE, user, date, car);
+            return String.format(OVERDUE_MESSAGE, user, date, car);
         };
         Comparator<Rental> comparator = (f, s) -> {
             if (f.getReturnDate().isBefore(s.getRentalDate())) {

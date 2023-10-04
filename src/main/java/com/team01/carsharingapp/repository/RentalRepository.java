@@ -1,7 +1,6 @@
 package com.team01.carsharingapp.repository;
 
 import com.team01.carsharingapp.model.Rental;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
