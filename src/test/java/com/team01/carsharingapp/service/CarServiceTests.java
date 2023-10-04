@@ -32,6 +32,18 @@ public class CarServiceTests {
     private static final int ONCE = 1;
     private static final Long ID_ONE = 1L;
     private static final Long INCORRECT_ID = 42L;
+    private static final String CAR_NOT_FOUND_MESSAGE = "Can't find car by id: ";
+    private static final String TEST_CAR_MODEL = "City";
+    private static final String TEST_CAR_BRAND = "Honda";
+    private static final Car.Type TEST_CAR_TYPE = Car.Type.valueOf("SEDAN");
+    private static final int TEST_CAR_AMOUNT = 3;
+    private static final BigDecimal TEST_CAR_FEE = BigDecimal.valueOf(5);
+    private static final String TEST_DTO_MODEL = "RAV4";
+    private static final String TEST_DTO_BRAND = "TOYOTA";
+    private static final String TEST_DTO_TYPE = "SUV";
+    private static final int TEST_DTO_AMOUNT = 1;
+    private static final BigDecimal TEST_DTO_FEE = BigDecimal.valueOf(3);
+
     @Mock
     private CarRepository carRepository;
     @Mock
@@ -43,7 +55,6 @@ public class CarServiceTests {
     @Test
     @DisplayName("Save car by correct data")
     public void save_AllCorrectData_CorrectDtoReturned() {
-        //given
         CreateCarRequestDto requestDto = createValidCreateCarRequestDto();
         Car expectedCarWithoutId = getCarFromCreateCarRequestDto(requestDto);
         Car expectedCarWithId = getCarFromCreateCarRequestDto(requestDto);
@@ -54,10 +65,8 @@ public class CarServiceTests {
         when(carRepository.save(expectedCarWithoutId)).thenReturn(expectedCarWithId);
         when(carMapper.toDto(expectedCarWithId)).thenReturn(expected);
 
-        //when
         CarDto actual = carService.save(requestDto);
 
-        //then
         Assertions.assertEquals(expected, actual);
         verify(carRepository, times(ONCE)).save(expectedCarWithoutId);
         verifyNoMoreInteractions(carRepository);
@@ -69,7 +78,6 @@ public class CarServiceTests {
     @Test
     @DisplayName("Show list of 1 car")
     public void getAll_OneCar_ReturnsCorrectList() {
-        //given
         Car car = createValidCar();
         List<Car> cars = List.of(car);
         CarDto carDto = getCarDtoFromCar(car);
@@ -77,10 +85,8 @@ public class CarServiceTests {
         when(carRepository.findAll()).thenReturn(cars);
         when(carMapper.toDto(car)).thenReturn(carDto);
 
-        //when
         List<CarDto> actual = carService.getAll();
 
-        //then
         List<CarDto> expected = new ArrayList<>();
         expected.add(carDto);
         Assertions.assertEquals(expected, actual);
@@ -93,17 +99,14 @@ public class CarServiceTests {
     @Test
     @DisplayName("Get car by correct id")
     public void getById_WithValidId_CorrectDtoReturned() {
-        //given
         Car car = createValidCar();
         CarDto expected = getCarDtoFromCar(car);
 
         when(carRepository.findById(ID_ONE)).thenReturn(Optional.of(car));
         when(carMapper.toDto(car)).thenReturn(expected);
 
-        //when
         CarDto actual = carService.getById(ID_ONE);
 
-        //then
         Assertions.assertEquals(expected, actual);
         verify(carRepository, times(ONCE)).findById(ID_ONE);
         verifyNoMoreInteractions(carRepository);
@@ -114,16 +117,14 @@ public class CarServiceTests {
     @Test
     @DisplayName("Try to get car by incorrect id")
     public void getById_WithInValidId_ExceptionThrown() {
-        //given
+        String expected = CAR_NOT_FOUND_MESSAGE + INCORRECT_ID;
 
         when(carRepository.findById(INCORRECT_ID)).thenReturn(Optional.empty());
 
-        //when
         Exception exception = assertThrows(EntityNotFoundException.class,
                 () -> carService.getById(INCORRECT_ID)
         );
-        //then
-        String expected = "Can't find car by id: " + INCORRECT_ID;
+
         String actual = exception.getMessage();
         Assertions.assertEquals(expected, actual);
         verify(carRepository, times(ONCE)).findById(INCORRECT_ID);
@@ -134,7 +135,6 @@ public class CarServiceTests {
     @Test
     @DisplayName("Update car by correct id")
     public void update_WithValidId_CorrectDtoReturned() {
-        //given
         CreateCarRequestDto request = createValidCreateCarRequestDto();
         Car oldCar = createValidCar();
         oldCar.setId(ID_ONE);
@@ -146,10 +146,8 @@ public class CarServiceTests {
         when(carRepository.save(updatedCar)).thenReturn(updatedCar);
         when(carMapper.toDto(updatedCar)).thenReturn(expected);
 
-        //when
         CarDto actual = carService.update(ID_ONE, request);
 
-        //then
         Assertions.assertEquals(expected, actual);
         verify(carRepository, times(ONCE)).findById(ID_ONE);
         verify(carRepository, times(ONCE)).save(updatedCar);
@@ -161,17 +159,14 @@ public class CarServiceTests {
     @Test
     @DisplayName("Try to update car by incorrect id")
     public void update_WithInValidId_ExceptionThrown() {
-        //given
         CreateCarRequestDto request = createValidCreateCarRequestDto();
-        String expected = "Can't find car by id: " + INCORRECT_ID;
+        String expected = CAR_NOT_FOUND_MESSAGE + INCORRECT_ID;
 
         when(carRepository.findById(INCORRECT_ID)).thenReturn(Optional.empty());
 
-        //when
         Throwable exception = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> carService.update(INCORRECT_ID, request));
 
-        //then
         String actual = exception.getMessage();
         Assertions.assertEquals(expected, actual);
         verify(carRepository, times(ONCE)).findById(INCORRECT_ID);
@@ -182,14 +177,11 @@ public class CarServiceTests {
     @Test
     @DisplayName("Delete car by correct id")
     public void deleteById_CorrectId_Success() {
-        //given
         when(carRepository.existsById(ID_ONE)).thenReturn(true);
         doNothing().when(carRepository).deleteById(ID_ONE);
 
-        //when
         carService.delete(ID_ONE);
 
-        //then
         verify(carRepository, times(ONCE)).existsById(ID_ONE);
         verify(carRepository, times(ONCE)).deleteById(ID_ONE);
         verifyNoMoreInteractions(carRepository);
@@ -199,16 +191,13 @@ public class CarServiceTests {
     @Test
     @DisplayName("Try to delete car by incorrect id")
     public void deleteById_InCorrectId_ThrowsException() {
-        //given
-        String excepted = "Can't find car by id: " + INCORRECT_ID;
+        String excepted = CAR_NOT_FOUND_MESSAGE + INCORRECT_ID;
 
         when(carRepository.existsById(INCORRECT_ID)).thenReturn(false);
 
-        //when
         Throwable exception = assertThrows(EntityNotFoundException.class,
                 () -> carService.delete(INCORRECT_ID));
 
-        //then
         String actual = exception.getMessage();
         Assertions.assertEquals(excepted, actual);
         verify(carRepository, times(ONCE)).existsById(INCORRECT_ID);
@@ -218,16 +207,21 @@ public class CarServiceTests {
 
     private Car createValidCar() {
         Car car = new Car();
-        car.setModel("City");
-        car.setBrand("Honda");
-        car.setType(Car.Type.valueOf("SEDAN"));
-        car.setAmountAvailable(3);
-        car.setDailyFee(BigDecimal.valueOf(5));
+        car.setModel(TEST_CAR_MODEL);
+        car.setBrand(TEST_CAR_BRAND);
+        car.setType(TEST_CAR_TYPE);
+        car.setAmountAvailable(TEST_CAR_AMOUNT);
+        car.setDailyFee(TEST_CAR_FEE);
         return car;
     }
 
     private CreateCarRequestDto createValidCreateCarRequestDto() {
-        return new CreateCarRequestDto("RAV4", "TOYOTA", "SUV", 1, BigDecimal.valueOf(3));
+        return new CreateCarRequestDto(
+                TEST_DTO_MODEL,
+                TEST_DTO_BRAND,
+                TEST_DTO_TYPE,
+                TEST_DTO_AMOUNT,
+                TEST_DTO_FEE);
     }
 
     private Car getCarFromCreateCarRequestDto(CreateCarRequestDto requestDto) {
