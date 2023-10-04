@@ -2,11 +2,13 @@ package com.team01.carsharingapp.controller;
 
 import com.team01.carsharingapp.dto.rental.CreateRentalRequestDto;
 import com.team01.carsharingapp.dto.rental.RentalDto;
+import com.team01.carsharingapp.model.User;
 import com.team01.carsharingapp.service.RentalService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +27,8 @@ public class RentalController {
     public RentalDto getById(
             @PathVariable Long id
     ) {
-        return rentalService.getById(id);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return rentalService.getById(user, id);
     }
 
     @GetMapping("/")
@@ -34,20 +37,23 @@ public class RentalController {
             @RequestParam(name = "is_active") Boolean isActive,
             Pageable pageable
     ) {
-        return rentalService.getByUserIdAndStatus(userId, isActive, pageable);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return rentalService.getByUserIdAndStatus(user, userId, isActive, pageable);
     }
 
     @PostMapping
     public RentalDto create(
             @RequestBody @Valid CreateRentalRequestDto requestDto
     ) {
-        return rentalService.create(requestDto);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return rentalService.create(user, requestDto);
     }
 
     @PostMapping("/return/{id}")
-    public RentalDto returnCarByRentalId(
+    public RentalDto carReturnByRentalId(
             @PathVariable Long id
     ) {
-        return rentalService.returnCarByRentalId(id);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return rentalService.carReturnByRentalId(user, id);
     }
 }
