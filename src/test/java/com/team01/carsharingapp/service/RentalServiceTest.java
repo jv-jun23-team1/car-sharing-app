@@ -5,9 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.team01.carsharingapp.dto.car.response.CarDto;
+import com.team01.carsharingapp.dto.rental.CreateRentalEvent;
 import com.team01.carsharingapp.dto.rental.CreateRentalRequestDto;
 import com.team01.carsharingapp.dto.rental.RentalDto;
 import com.team01.carsharingapp.mapper.RentalMapper;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -42,13 +45,15 @@ public class RentalServiceTest {
     private RentalMapper rentalMapper;
     @Mock
     private CarRepository carRepository;
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Test
     @DisplayName("Test getting rental dto by valid id")
     public void getById_validId_returnRentalDto() {
         Rental validRental = getValidRental();
         RentalDto expected = getRentalDtoFromRental();
-        when(rentalRepository.findById(anyLong())).thenReturn(Optional.of(validRental));
+        when(rentalRepository.findByIdWithFetch(anyLong())).thenReturn(Optional.of(validRental));
         when(rentalMapper.toDto(any(Rental.class))).thenReturn(expected);
 
         RentalDto actual = rentalService.getById(getValidUser(), validRental.getId());
@@ -62,16 +67,18 @@ public class RentalServiceTest {
         Car car = getValidCar();
         Car returnedCar = getValidCar();
         returnedCar.setAmountAvailable(car.getAmountAvailable() - 1);
+        Rental rental = getValidRental();
         RentalDto expected = getRentalDtoFromRental();
 
         when(carRepository.findById(anyLong())).thenReturn(Optional.of(car));
         when(carRepository.save(any(Car.class))).thenReturn(returnedCar);
-        when(rentalRepository.save(any(Rental.class))).thenReturn(getValidRental());
+        when(rentalRepository.save(any(Rental.class))).thenReturn(rental);
         when(rentalMapper.toDto(any(Rental.class))).thenReturn(expected);
 
         RentalDto actual = rentalService.create(getValidUser(), getCreateRentalRequestDto());
 
         assertEquals(expected, actual);
+        verify(applicationEventPublisher).publishEvent(any(CreateRentalEvent.class));
     }
 
     @Test
