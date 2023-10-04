@@ -83,7 +83,6 @@ public class PaymentServiceImpl implements PaymentService {
                 rentalById.getReturnDate(),
                 rentalById.getCar().getDailyFee());
         payment.setRental(rentalById);
-        payment.setType(Payment.Type.valueOf(requestDto.type()));
         payment.setStatus(Payment.Status.PENDING);
         payment.setPrice(totalPrice);
         return payment;
