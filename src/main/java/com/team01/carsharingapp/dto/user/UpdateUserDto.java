@@ -7,20 +7,20 @@ import lombok.Data;
 
 @Data
 public class UpdateUserDto {
-    @NotBlankIfNotNull(message = "email cannot be blank if not null")
+    @NotBlankIfNotNull(message = "email can't be blank if not null")
     @Size(min = 4, max = 255, message = "size must be between 4 and 255 character")
     @Email(message = "invalid email format")
     private String email;
 
-    @NotBlankIfNotNull(message = "password cannot be blank if not null")
+    @NotBlankIfNotNull(message = "password can't be blank if not null")
     @Size(min = 8, max = 50, message = "size must be between 8 and 50 character")
     private String password;
 
-    @NotBlankIfNotNull(message = "firstName cannot be blank if not null")
+    @NotBlankIfNotNull(message = "firstName can't be blank if not null")
     @Size(min = 2, max = 50, message = "size must be between 2 and 50 character")
     private String firstName;
 
-    @NotBlankIfNotNull(message = "lastName cannot be blank if not null")
+    @NotBlankIfNotNull(message = "lastName can't be blank if not null")
     @Size(min = 2, max = 50, message = "size must be between 2 and 50 character")
     private String lastName;
 
