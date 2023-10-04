@@ -4,6 +4,7 @@ import com.team01.carsharingapp.dto.user.UpdateUserDto;
 import com.team01.carsharingapp.dto.user.UpdateUserRoleDto;
 import com.team01.carsharingapp.dto.user.UserDto;
 import com.team01.carsharingapp.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,12 +28,12 @@ public class UserController {
     @PutMapping("{id}/role")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     UserDto updateRoles(@PathVariable Long id,
-                        @RequestBody UpdateUserRoleDto userRoleDto) {
+                        @Valid @RequestBody UpdateUserRoleDto userRoleDto) {
         return userService.updateRoles(id, userRoleDto);
     }
 
     @PutMapping("/me")
-    UserDto update(@RequestBody UpdateUserDto updateUserDto) {
+    UserDto update(@Valid @RequestBody UpdateUserDto updateUserDto) {
         return userService.update(updateUserDto);
     }
 }
