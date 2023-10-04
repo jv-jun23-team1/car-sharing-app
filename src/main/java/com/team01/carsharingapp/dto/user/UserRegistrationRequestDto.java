@@ -11,7 +11,7 @@ import lombok.Data;
         message = "passwords must match")
 public class UserRegistrationRequestDto {
     @NotBlank(message = "required field")
-    @Size(min = 4, max = 50, message = "size must be between 4 and 255 character")
+    @Size(min = 4, max = 255, message = "size must be between 4 and 255 character")
     @Email(message = "invalid email format")
     private String email;
 

@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto getInfo() {
-        return convertToDto(getUserById(getCurrentUser().getId()));
+        return userMapper.toDto(getUserById(getCurrentUser().getId()));
     }
 
     @Override
@@ -60,18 +60,29 @@ public class UserServiceImpl implements UserService {
                 .map(this::getRoleById)
                 .collect(Collectors.toSet()));
 
-        return convertToDto(userRepository.save(user));
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
     @Transactional
     public UserDto update(UpdateUserDto updateUserDto) {
-        User user = userMapper.toModel(updateUserDto);
+        User userFromDB = getUserById(getCurrentUser().getId());
+        userRepository.findById(getCurrentUser().getId());
 
-        user.setId(getCurrentUser().getId());
-        user.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
+        if (updateUserDto.getEmail() != null) {
+            userFromDB.setEmail(updateUserDto.getEmail());
+        }
+        if (updateUserDto.getFirstName() != null) {
+            userFromDB.setFirstName(updateUserDto.getFirstName());
+        }
+        if (updateUserDto.getLastName() != null) {
+            userFromDB.setLastName(updateUserDto.getLastName());
+        }
+        if (updateUserDto.getPassword() != null) {
+            userFromDB.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
+        }
 
-        return convertToDto(userRepository.save(user));
+        return userMapper.toDto(userRepository.save(userFromDB));
     }
 
     private boolean existInDataBase(String username) {
@@ -87,13 +98,5 @@ public class UserServiceImpl implements UserService {
         return roleRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't get role by id: "
                         + id));
-    }
-
-    private UserDto convertToDto(User user) {
-        UserDto dto = userMapper.toDto(user);
-        dto.setRoleIds(user.getRoles().stream()
-                .map(Role::getId)
-                .collect(Collectors.toSet()));
-        return dto;
     }
 }
