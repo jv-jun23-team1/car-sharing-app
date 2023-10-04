@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,6 +44,7 @@ public class RentalServiceTest {
     private CarRepository carRepository;
 
     @Test
+    @DisplayName("Test getting rental dto by valid id")
     public void getById_validId_returnRentalDto() {
         Rental validRental = getValidRental();
         RentalDto expected = getRentalDtoFromRental();
@@ -55,6 +57,7 @@ public class RentalServiceTest {
     }
 
     @Test
+    @DisplayName("Test creating rental by valid request")
     void create_validRequestDto_returnRentalDto() {
         Car car = getValidCar();
         Car returnedCar = getValidCar();
@@ -72,6 +75,7 @@ public class RentalServiceTest {
     }
 
     @Test
+    @DisplayName("Test getting rental dto list by valid request params")
     void getByUserIdAndStatus_validRequestForManager_returnRentalDtoList() {
         Pageable pageable = PageRequest.of(0, 10);
         User user = getValidUser();
@@ -91,6 +95,7 @@ public class RentalServiceTest {
     }
 
     @Test
+    @DisplayName("Test getting rental dto when user returns a car")
     void carReturnByRentalId_validId_returnRentalDto() {
         Rental rental = getValidRental();
         RentalDto expected = getRentalDtoFromRental();
