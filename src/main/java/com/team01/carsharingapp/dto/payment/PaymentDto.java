@@ -9,7 +9,7 @@ public class PaymentDto {
     private Long id;
     private Long rentalId;
     private String sessionUrl;
-    private Long sessionId;
+    private String sessionId;
     private BigDecimal price;
     private Payment.Status status;
     private Payment.Type type;

@@ -22,6 +22,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private static final String AUTH_ENDPOINT = "/auth/**";
+    private static final String SWAGGER_ENDPOINT = "/swagger-ui/**";
+    private static final String SUCCESS_ENDPOINT = "/payment/success/**";
+    private static final String CANCEL_ENDPOINT = "/payment/cancel/**";
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -37,10 +41,10 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/auth/**",
-                                        "/swagger-ui/**",
-                                        "/v3-api.docs/**",
-                                        "/error/**")
+                                .requestMatchers(AUTH_ENDPOINT,
+                                        SWAGGER_ENDPOINT,
+                                        SUCCESS_ENDPOINT,
+                                        CANCEL_ENDPOINT)
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()

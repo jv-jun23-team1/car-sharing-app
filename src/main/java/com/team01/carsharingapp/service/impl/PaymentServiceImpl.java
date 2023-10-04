@@ -2,11 +2,15 @@ package com.team01.carsharingapp.service.impl;
 
 import com.team01.carsharingapp.dto.payment.PaymentDto;
 import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
+import com.team01.carsharingapp.dto.stripe.StripeDto;
+import com.team01.carsharingapp.exception.EntityNotFoundException;
 import com.team01.carsharingapp.mapper.PaymentMapper;
-import com.team01.carsharingapp.model.Car;
+import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.model.Rental;
-import com.team01.carsharingapp.repository.payment.PaymentRepository;
+import com.team01.carsharingapp.repository.PaymentRepository;
+import com.team01.carsharingapp.repository.RentalRepository;
 import com.team01.carsharingapp.service.PaymentService;
+import com.team01.carsharingapp.service.StripeService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -17,27 +21,26 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class PaymentServiceImpl implements PaymentService {
-    private PaymentRepository paymentRepository;
+    private static final String CURRENCY = "usd";
+    private final PaymentRepository paymentRepository;
+    private final RentalRepository rentalRepository;
     private final PaymentMapper paymentMapper;
+    private final StripeService stripeService;
 
     @Override
     public PaymentDto createPayment(PaymentRequestDto requestDto) {
-        //create test entity rental
-        Rental currentRental = new Rental();
-        currentRental.setId(requestDto.rentalId());
-        Car currentCar = new Car();
-        currentCar.setDailyFee(BigDecimal.valueOf(20.0));
-        currentRental.setCar(currentCar);
-        currentRental.setRentalDate(LocalDate.now());
-        currentRental.setReturnDate(LocalDate.now().plusDays(3));
-        //Values for stripe
-        BigDecimal totalPrice = calculateRentalCost(
-                currentRental.getRentalDate(),
-                currentRental.getReturnDate(),
-                currentRental.getCar().getDailyFee());
-        String currentCurrency = requestDto.currency();
-        String currentType = requestDto.type();
-        return new PaymentDto();
+        Rental rentalById = rentalRepository
+                .findByIdWithFetch(requestDto.rentalId()).orElseThrow(
+                        () -> new EntityNotFoundException("Rental with id: "
+                        + requestDto.rentalId() + " not exist")
+        );
+        Payment payment = createPaymentEntity(rentalById, requestDto);
+
+        StripeDto sessionInfo = stripeService.pay(payment, CURRENCY);
+        payment.setSessionUrl(sessionInfo.getSessionUrl());
+        payment.setSessionId(sessionInfo.getSessionId());
+
+        return paymentMapper.toDto(paymentRepository.save(payment));
     }
 
     @Override
@@ -52,10 +55,36 @@ public class PaymentServiceImpl implements PaymentService {
                 .toList();
     }
 
+    @Override
+    public Payment getPaymentBySessionId(String sessionId) {
+        return paymentRepository.findBySessionId(sessionId).orElseThrow(
+                () -> new EntityNotFoundException("Payment with session id: "
+                        + sessionId + " not found!")
+        );
+    }
+
+    @Override
+    public void save(Payment payment) {
+        paymentRepository.save(payment);
+    }
+
     private BigDecimal calculateRentalCost(LocalDate startDate,
                                            LocalDate endDate,
                                            BigDecimal dailyRate) {
         long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
         return dailyRate.multiply(BigDecimal.valueOf(numberOfDays));
+    }
+
+    private Payment createPaymentEntity(Rental rentalById,
+                                        PaymentRequestDto requestDto) {
+        Payment payment = paymentMapper.toEntity(requestDto);
+        BigDecimal totalPrice = calculateRentalCost(
+                rentalById.getRentalDate(),
+                rentalById.getReturnDate(),
+                rentalById.getCar().getDailyFee());
+        payment.setRental(rentalById);
+        payment.setStatus(Payment.Status.PENDING);
+        payment.setPrice(totalPrice);
+        return payment;
     }
 }
