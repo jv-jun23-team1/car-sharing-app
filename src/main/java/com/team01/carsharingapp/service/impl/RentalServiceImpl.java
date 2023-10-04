@@ -36,7 +36,7 @@ public class RentalServiceImpl implements RentalService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Rental rental;
         if (isManager(user)) {
-            rental = rentalRepository.findById(rentalId).orElseThrow(() ->
+            rental = rentalRepository.findByIdWithFetch(rentalId).orElseThrow(() ->
                     new EntityNotFoundException(
                             "Can't find rental by id = " + rentalId)
             );
