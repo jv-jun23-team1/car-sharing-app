@@ -120,7 +120,7 @@ public class RentalServiceImpl implements RentalService {
     private boolean isManager(User user) {
         Optional<Role.RoleName> manager = user.getRoles().stream()
                 .map(Role::getName)
-                .filter(r -> r == Role.RoleName.MANAGER)
+                .filter(r -> r == Role.RoleName.ROLE_MANAGER)
                 .findFirst();
         return manager.isPresent();
     }
