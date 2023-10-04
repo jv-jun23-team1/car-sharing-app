@@ -28,7 +28,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: session_id
-                  type: bigint
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
