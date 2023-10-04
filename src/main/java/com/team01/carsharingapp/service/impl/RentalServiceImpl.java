@@ -1,5 +1,6 @@
 package com.team01.carsharingapp.service.impl;
 
+import com.team01.carsharingapp.dto.rental.CreateRentalEvent;
 import com.team01.carsharingapp.dto.rental.CreateRentalRequestDto;
 import com.team01.carsharingapp.dto.rental.RentalDto;
 import com.team01.carsharingapp.exception.EntityNotFoundException;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +29,13 @@ public class RentalServiceImpl implements RentalService {
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final CarRepository carRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public RentalDto getById(User user, Long rentalId) {
         Rental rental;
         if (isManager(user)) {
-            rental = rentalRepository.findById(rentalId).orElseThrow(() ->
+            rental = rentalRepository.findByIdWithFetch(rentalId).orElseThrow(() ->
                     new EntityNotFoundException(
                             "Can't find rental by id = " + rentalId)
             );
@@ -56,7 +59,10 @@ public class RentalServiceImpl implements RentalService {
         rental.setUser(user);
         rental.setRentalDate(LocalDate.now());
         rental.setReturnDate(requestDto.returnDate());
-        return rentalMapper.toDto(rentalRepository.save(rental));
+        rental = rentalRepository.save(rental);
+        applicationEventPublisher
+                .publishEvent(CreateRentalEvent.of(this, rental));
+        return rentalMapper.toDto(rental);
     }
 
     @Override

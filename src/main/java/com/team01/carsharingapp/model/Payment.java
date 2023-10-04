@@ -37,7 +37,7 @@ public class Payment {
     @Column(nullable = false)
     private String sessionUrl;
     @Column(nullable = false)
-    private Long sessionId;
+    private String sessionId;
     @Column(nullable = false)
     private BigDecimal price;
     @Enumerated(EnumType.STRING)

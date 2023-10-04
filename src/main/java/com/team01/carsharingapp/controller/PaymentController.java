@@ -2,9 +2,11 @@ package com.team01.carsharingapp.controller;
 
 import com.team01.carsharingapp.dto.payment.PaymentDto;
 import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
+import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.service.PaymentService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/payment")
 public class PaymentController {
     private static final String PAYMENT_SUCCESS = "Payment successful!";
-    private static final String PAYMENT_CANSEL = "Payment paused!";
+    private static final String PAYMENT_CANCEL = "Payment canceled!";
     private final PaymentService paymentService;
 
     @GetMapping
@@ -31,13 +33,17 @@ public class PaymentController {
         return paymentService.createPayment(requestDto);
     }
 
+    @Transactional
     @GetMapping("/success")
-    public String checkSuccessfulPayments() {
+    public String checkSuccessfulPayments(@RequestParam String sessionId) {
+        Payment payment = paymentService.getPaymentBySessionId(sessionId);
+        payment.setStatus(Payment.Status.PAID);
+        paymentService.save(payment);
         return PAYMENT_SUCCESS;
     }
 
     @GetMapping("/cancel")
     public String returnPaymentPausedMessage() {
-        return PAYMENT_CANSEL;
+        return PAYMENT_CANCEL;
     }
 }
