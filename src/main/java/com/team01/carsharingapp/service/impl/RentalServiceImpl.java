@@ -16,11 +16,11 @@ import com.team01.carsharingapp.service.RentalService;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,8 +32,7 @@ public class RentalServiceImpl implements RentalService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public RentalDto getById(Long rentalId) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public RentalDto getById(User user, Long rentalId) {
         Rental rental;
         if (isManager(user)) {
             rental = rentalRepository.findByIdWithFetch(rentalId).orElseThrow(() ->
@@ -53,12 +52,10 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     @Transactional
-    public RentalDto create(CreateRentalRequestDto requestDto) {
-        User user = (User) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
+    public RentalDto create(User user, CreateRentalRequestDto requestDto) {
         checkTime(requestDto.returnDate());
         Rental rental = new Rental();
-        rental.setCar(createCar(requestDto.carId()));
+        rental.setCar(getAvailableCarFromDb(requestDto.carId()));
         rental.setUser(user);
         rental.setRentalDate(LocalDate.now());
         rental.setReturnDate(requestDto.returnDate());
@@ -70,31 +67,28 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     public List<RentalDto> getByUserIdAndStatus(
-            Long userId, boolean isActive, Pageable pageable
+            User user, Long userId, boolean isActive, Pageable pageable
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Rental> rentals;
         if (isManager(user)) {
-            if (userId == null) {
-                rentals = rentalRepository.findAllByStatus(isActive, pageable);
-            } else {
-                rentals = rentalRepository.findAllByUserIdAndStatus(userId, isActive, pageable);
-            }
+            rentals = userId == null
+                    ? rentalRepository.findAllByStatus(isActive, pageable) :
+                    rentalRepository.findAllByUserIdAndStatus(userId, isActive, pageable);
         } else {
-            if (userId == null || userId.equals(user.getId())) {
-                rentals = rentalRepository
-                        .findAllByUserIdAndStatus(user.getId(), isActive, pageable);
-            } else {
+            if (!Objects.equals(userId, user.getId())) {
                 throw new RentalException("User role hasn't opportunity for this");
             }
+            rentals = rentalRepository
+                    .findAllByUserIdAndStatus(user.getId(), isActive, pageable);
         }
-        return rentals.stream().map(rentalMapper::toDto).toList();
+        return rentals.stream()
+                .map(rentalMapper::toDto)
+                .toList();
     }
 
     @Transactional
     @Override
-    public RentalDto returnCarByRentalId(Long id) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public RentalDto carReturnByRentalId(User user, Long id) {
         Rental rental = rentalRepository.findByIdAndUserId(id, user.getId()).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Can't find rental by id = " + id + " and user id = " + user.getId()
@@ -107,7 +101,7 @@ public class RentalServiceImpl implements RentalService {
         return rentalMapper.toDto(rentalRepository.save(rental));
     }
 
-    private Car createCar(Long carId) {
+    private Car getAvailableCarFromDb(Long carId) {
         Car car = carRepository.findById(carId).orElseThrow(() ->
                 new EntityNotFoundException("Can't find car by id = " + carId));
         if (car.getAmountAvailable() < 1) {
