@@ -8,11 +8,11 @@ import java.util.List;
 public interface PaymentService {
     PaymentDto createPayment(PaymentRequestDto requestDto);
 
-    PaymentDto getPayments();
-
     List<PaymentDto> getPaymentsByUserId(Long userId);
 
     Payment getPaymentBySessionId(String sessionId);
 
     void save(Payment payment);
+
+    List<PaymentDto> getAllPayments();
 }

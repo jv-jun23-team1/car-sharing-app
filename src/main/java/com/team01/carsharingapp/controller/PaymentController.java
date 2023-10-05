@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,13 @@ public class PaymentController {
             + "can't approve your payment!";
     private final PaymentService paymentService;
     private final StripeService stripeService;
+
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @GetMapping
+    @Operation(summary = "Get all payments", description = "Get list of user payments. Only for manager/admin")
+    public List<PaymentDto> getAllPayments() {
+        return paymentService.getAllPayments();
+    }
 
     @GetMapping
     @Operation(summary = "Get all payments by user ID", description = "Get list of user payments.")
