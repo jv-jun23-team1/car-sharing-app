@@ -28,6 +28,7 @@ public class SecurityConfig {
     private static final String SUCCESS_ENDPOINT = "/payment/success/**";
     private static final String CANCEL_ENDPOINT = "/payment/cancel/**";
     private static final String ALL_CARS_ENDPOINT = "/cars";
+    private static final String HTTP_METHOD_GET = "GET";
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -48,8 +49,8 @@ public class SecurityConfig {
                                         SUCCESS_ENDPOINT,
                                         CANCEL_ENDPOINT)
                                 .permitAll()
-                                .requestMatchers(
-                                        new AntPathRequestMatcher(ALL_CARS_ENDPOINT, "GET"))
+                                .requestMatchers(new AntPathRequestMatcher(
+                                        ALL_CARS_ENDPOINT, HTTP_METHOD_GET))
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
