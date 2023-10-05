@@ -1,6 +1,7 @@
 package com.team01.carsharingapp.mapper;
 
 import com.team01.carsharingapp.config.MapperConfig;
+import com.team01.carsharingapp.dto.user.UpdateUserDto;
 import com.team01.carsharingapp.dto.user.UserDto;
 import com.team01.carsharingapp.dto.user.UserRegistrationRequestDto;
 import com.team01.carsharingapp.dto.user.UserRegistrationResponseDto;
@@ -20,6 +21,8 @@ public interface UserMapper {
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "authorities", ignore = true)
     User toModel(UserRegistrationRequestDto requestDto);
+
+    User toModel(UpdateUserDto requestDto);
 
     UserRegistrationResponseDto toResponseDto(User user);
 

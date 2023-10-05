@@ -61,17 +61,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto update(UpdateUserDto updateUserDto, User user) {
-        User userFromDB = getUserById(user.getId());
-
-        return userMapper.toDto(userRepository.save(userFromDB));
+        User userModel = userMapper.toModel(updateUserDto);
+        userModel.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
+        return userMapper.toDto(userRepository.save(userModel));
     }
 
     private boolean existInDataBase(String username) {
         return userRepository.findByEmail(username).isPresent();
-    }
-
-    private User getCurrentUser() {
-        return (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     private User getUserById(Long id) {
