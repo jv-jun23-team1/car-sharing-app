@@ -27,8 +27,8 @@ public class CarServiceImpl implements CarService {
 
     @Override
     @Transactional
-    public List<CarDto> getAll(Pageable pageable) {
-        return carRepository.findAll(pageable).stream()
+    public List<CarDto> getAll() {
+        return carRepository.findAll().stream()
                 .map(carMapper::toDto)
                 .toList();
     }
