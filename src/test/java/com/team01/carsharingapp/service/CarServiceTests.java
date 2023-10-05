@@ -26,6 +26,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class CarServiceTests {
@@ -78,22 +82,25 @@ public class CarServiceTests {
     @Test
     @DisplayName("Show list of 1 car")
     public void getAll_OneCar_ReturnsCorrectList() {
+
         Car car = createValidCar();
         List<Car> cars = List.of(car);
+        Page<Car> carPage = new PageImpl<>(cars);
         CarDto carDto = getCarDtoFromCar(car);
+        Pageable pageable = PageRequest.of(0, 1);
 
-        when(carRepository.findAll()).thenReturn(cars);
+        when(carRepository.findAll(pageable)).thenReturn(carPage);
         when(carMapper.toDto(car)).thenReturn(carDto);
 
-        List<CarDto> actual = carService.getAll();
+        List<CarDto> actual = carService.getAll(pageable);
 
         List<CarDto> expected = new ArrayList<>();
         expected.add(carDto);
+
         Assertions.assertEquals(expected, actual);
-        verify(carRepository, times(ONCE)).findAll();
-        verifyNoMoreInteractions(carRepository);
-        verify(carMapper, times(ONCE)).toDto(car);
-        verifyNoMoreInteractions(carMapper);
+        verify(carRepository).findAll(pageable);
+        verify(carMapper).toDto(car);
+        verifyNoMoreInteractions(carMapper, carRepository);
     }
 
     @Test

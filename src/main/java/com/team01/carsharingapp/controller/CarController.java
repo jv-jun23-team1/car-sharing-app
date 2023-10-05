@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,8 +39,8 @@ public class CarController {
 
     @GetMapping
     @Operation(summary = "Get all cars", description = "Get list of available cars.")
-    public List<CarDto> getAll() {
-        return carService.getAll();
+    public List<CarDto> getAll(Pageable pageable) {
+        return carService.getAll(pageable);
     }
 
     @GetMapping("/{id}")
