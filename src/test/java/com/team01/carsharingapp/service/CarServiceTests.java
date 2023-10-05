@@ -3,7 +3,9 @@ package com.team01.carsharingapp.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.team01.carsharingapp.dto.car.request.CreateCarRequestDto;
@@ -14,6 +16,7 @@ import com.team01.carsharingapp.model.Car;
 import com.team01.carsharingapp.repository.CarRepository;
 import com.team01.carsharingapp.service.impl.CarServiceImpl;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -87,12 +90,10 @@ public class CarServiceTests {
         List<CarDto> expected = new ArrayList<>();
         expected.add(carDto);
 
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
         verify(carRepository).findAll(pageable);
         verify(carMapper).toDto(car);
         verifyNoMoreInteractions(carMapper, carRepository);
-
-        assertEquals(expected, actual);
     }
 
     @Test
