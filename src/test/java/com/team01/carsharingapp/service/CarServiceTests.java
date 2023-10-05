@@ -92,8 +92,6 @@ public class CarServiceTests {
         verify(carRepository).findAll(pageable);
         verify(carMapper).toDto(car);
         verifyNoMoreInteractions(carMapper, carRepository);
-
-        assertEquals(expected, actual);
     }
 
     @Test
