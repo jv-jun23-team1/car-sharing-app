@@ -33,7 +33,8 @@ public class PaymentController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @GetMapping
-    @Operation(summary = "Get all payments", description = "Get list of user payments. Only for manager/admin")
+    @Operation(summary = "Get all payments",
+            description = "Get list of user payments. Only for manager/admin")
     public List<PaymentDto> getAllPayments() {
         return paymentService.getAllPayments();
     }

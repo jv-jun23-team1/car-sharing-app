@@ -27,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class PaymentServiceImplTest {
+public class PaymentServiceTests {
     private static final Rental VALID_RENTAL = new Rental();
     private static final Payment VALID_PAYMENT = new Payment();
 
