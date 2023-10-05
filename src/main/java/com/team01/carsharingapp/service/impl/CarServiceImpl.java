@@ -22,7 +22,6 @@ public class CarServiceImpl implements CarService {
     @Transactional
     public CarDto save(CreateCarRequestDto request) {
         Car car = carMapper.toEntity(request);
-        car.setType(Car.Type.valueOf(request.type()));
         return carMapper.toDto(carRepository.save(car));
     }
 
