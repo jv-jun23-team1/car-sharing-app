@@ -12,7 +12,7 @@ Our robust and secure application, built on the **Java Spring Boot framework**, 
 - [👨‍💻Tech stack](#tech-stack)
 - [⚡Quick start](#-quick-start)
 - [✈️Features](#features)
-- [Roles](#roles)
+- [👮🏻‍♂️Roles](#-roles)
 - [‍🚀Swagger](#swagger)
 - [🧑Contribution](#contribution)
 - [🏁Conclusion](#conclusion)
@@ -54,7 +54,7 @@ mvn clean install
 ```
 Then, rise a **Docker** container of your app:
 ```bash
-docker build -t {your-image-name}
+docker build -t {your-image-name} .
 docker-compose build
 docker-compose up
 ```
@@ -78,7 +78,7 @@ Our platform supports payment function provided through Stripe platform. You can
 
 Handles notifications about new rentals, overdue rentals, and successful payments. Other services interact with it to send notifications to car sharing service administrators. Utilizes the Telegram API, Telegram Chats, and Bots for communication.:
 
-## Roles:
+## 👮🏻‍♂️ Roles:
 
 In our API, functionality is divided for Customers and Managers:
 
