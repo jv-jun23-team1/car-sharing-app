@@ -61,22 +61,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto update(UpdateUserDto updateUserDto, User user) {
-        User userFromDB = getUserById(user.getId());
-
-        if (updateUserDto.getEmail() != null) {
-            userFromDB.setEmail(updateUserDto.getEmail());
-        }
-        if (updateUserDto.getFirstName() != null) {
-            userFromDB.setFirstName(updateUserDto.getFirstName());
-        }
-        if (updateUserDto.getLastName() != null) {
-            userFromDB.setLastName(updateUserDto.getLastName());
-        }
-        if (updateUserDto.getPassword() != null) {
-            userFromDB.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
-        }
-
-        return userMapper.toDto(userRepository.save(userFromDB));
+        User userModel = userMapper.toModel(updateUserDto);
+        userModel.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
+        return userMapper.toDto(userRepository.save(userModel));
     }
 
     private boolean existInDataBase(String username) {

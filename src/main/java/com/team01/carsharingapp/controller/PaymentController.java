@@ -2,7 +2,6 @@ package com.team01.carsharingapp.controller;
 
 import com.team01.carsharingapp.dto.payment.PaymentDto;
 import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
-import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.service.PaymentService;
 import com.team01.carsharingapp.service.StripeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +27,8 @@ public class PaymentController {
     private static final String PAYMENT_CANCEL = "Payment canceled!";
     private static final String PAYMENT_ERROR = "Problem with session id, "
             + "can't approve your payment!";
+    private static final String PAYMENT_FAILED = "Payment failed!";
+
     private final PaymentService paymentService;
     private final StripeService stripeService;
 
@@ -53,17 +54,14 @@ public class PaymentController {
         return paymentService.createPayment(requestDto);
     }
 
-    @Transactional
     @GetMapping("/success")
     @Operation(summary = "Gets a successful payments from Stripe")
     public String checkSuccessfulPayments(@RequestParam String sessionId) {
         if (!stripeService.isPaid(sessionId)) {
             return PAYMENT_ERROR;
         }
-        Payment payment = paymentService.getPaymentBySessionId(sessionId);
-        payment.setStatus(Payment.Status.PAID);
-        paymentService.save(payment);
-        return PAYMENT_SUCCESS;
+        return paymentService.setPaymentSuccessStatus(sessionId)
+                ? PAYMENT_SUCCESS : PAYMENT_FAILED;
     }
 
     @GetMapping("/cancel")

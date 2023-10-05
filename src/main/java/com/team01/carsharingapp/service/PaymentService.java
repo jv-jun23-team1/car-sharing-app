@@ -15,4 +15,6 @@ public interface PaymentService {
     void save(Payment payment);
 
     List<PaymentDto> getAllPayments();
+  
+    boolean setPaymentSuccessStatus(String sessionId);
 }
