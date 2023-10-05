@@ -69,6 +69,11 @@ public class CarServiceTests {
         CarDto actual = carService.save(requestDto);
 
         assertEquals(expected, actual);
+        verify(carRepository, times(ONCE)).save(expectedCarWithoutId);
+        verifyNoMoreInteractions(carRepository);
+        verify(carMapper, times(ONCE)).toEntity(requestDto);
+        verify(carMapper, times(ONCE)).toDto(expectedCarWithId);
+        verifyNoMoreInteractions(carMapper);
     }
 
     @Test
@@ -106,6 +111,10 @@ public class CarServiceTests {
         CarDto actual = carService.getById(ID_ONE);
 
         assertEquals(expected, actual);
+        verify(carRepository, times(ONCE)).findById(ID_ONE);
+        verifyNoMoreInteractions(carRepository);
+        verify(carMapper, times(ONCE)).toDto(car);
+        verifyNoMoreInteractions(carMapper);
     }
 
     @Test
@@ -118,9 +127,11 @@ public class CarServiceTests {
         Exception exception = assertThrows(EntityNotFoundException.class,
                 () -> carService.getById(INCORRECT_ID)
         );
-        String actual = exception.getMessage();
 
+        String actual = exception.getMessage();
         assertEquals(expected, actual);
+        verify(carRepository, times(ONCE)).findById(INCORRECT_ID);
+        verifyNoMoreInteractions(carRepository);
         verifyNoInteractions(carMapper);
     }
 
@@ -141,6 +152,11 @@ public class CarServiceTests {
         CarDto actual = carService.update(ID_ONE, request);
 
         assertEquals(expected, actual);
+        verify(carRepository, times(ONCE)).findById(ID_ONE);
+        verify(carRepository, times(ONCE)).save(updatedCar);
+        verifyNoMoreInteractions(carRepository);
+        verify(carMapper, times(ONCE)).toDto(updatedCar);
+        verifyNoMoreInteractions(carMapper);
     }
 
     @Test
@@ -153,9 +169,11 @@ public class CarServiceTests {
 
         Throwable exception = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> carService.update(INCORRECT_ID, request));
-        String actual = exception.getMessage();
 
+        String actual = exception.getMessage();
         assertEquals(expected, actual);
+        verify(carRepository, times(ONCE)).findById(INCORRECT_ID);
+        verifyNoMoreInteractions(carRepository);
         verifyNoInteractions(carMapper);
     }
 
@@ -167,6 +185,9 @@ public class CarServiceTests {
 
         carService.delete(ID_ONE);
 
+        verify(carRepository, times(ONCE)).existsById(ID_ONE);
+        verify(carRepository, times(ONCE)).deleteById(ID_ONE);
+        verifyNoMoreInteractions(carRepository);
         verifyNoInteractions(carMapper);
     }
 
@@ -179,9 +200,11 @@ public class CarServiceTests {
 
         Throwable exception = assertThrows(EntityNotFoundException.class,
                 () -> carService.delete(INCORRECT_ID));
-        String actual = exception.getMessage();
 
+        String actual = exception.getMessage();
         assertEquals(excepted, actual);
+        verify(carRepository, times(ONCE)).existsById(INCORRECT_ID);
+        verifyNoMoreInteractions(carRepository);
         verifyNoInteractions(carMapper);
     }
 
