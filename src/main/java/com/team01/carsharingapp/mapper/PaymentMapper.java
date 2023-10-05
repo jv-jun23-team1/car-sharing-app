@@ -14,6 +14,13 @@ public interface PaymentMapper {
     @Mapping(target = "rentalId", source = "payment.rental.id")
     PaymentDto toDto(Payment payment);
 
+    @Mapping(target = "rental.id", source = "rentalId")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "sessionUrl", ignore = true)
+    @Mapping(target = "sessionId", ignore = true)
+    @Mapping(target = "price", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "isDeleted", ignore = true)
     Payment toEntity(PaymentRequestDto paymentRequestDto);
 
     @AfterMapping
