@@ -46,6 +46,7 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Type type;
+    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
