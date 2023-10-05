@@ -61,7 +61,7 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .build();
-}
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(
