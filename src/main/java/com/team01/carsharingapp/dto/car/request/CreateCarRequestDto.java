@@ -1,5 +1,7 @@
 package com.team01.carsharingapp.dto.car.request;
 
+import com.team01.carsharingapp.model.Car;
+import com.team01.carsharingapp.validator.EnumValue;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +16,7 @@ public record CreateCarRequestDto(
         @Size(min = 2, max = 100, message = "brand should be between 2 and 100 characters")
         String brand,
         @NotBlank(message = "type can't be null")
-        @Size(min = 3, max = 10, message = "type should be between 3 and 10 characters")
+        @EnumValue(enumClass = Car.Type.class, message = "invalid enum Car.Type value")
         String type,
         @Min(value = 0, message = "amount available can't be less than 0")
         int amountAvailable,
