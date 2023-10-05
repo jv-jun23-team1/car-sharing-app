@@ -4,6 +4,7 @@ import com.team01.carsharingapp.dto.payment.PaymentDto;
 import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
 import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.service.PaymentService;
+import com.team01.carsharingapp.service.StripeService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
     private static final String PAYMENT_SUCCESS = "Payment successful!";
     private static final String PAYMENT_CANCEL = "Payment canceled!";
+    private static final String PAYMENT_ERROR = "Problem with session id, "
+            + "can't approve your payment!";
     private final PaymentService paymentService;
+    private final StripeService stripeService;
 
     @GetMapping
     public List<PaymentDto> getPayments(@RequestParam("user_id") Long userId) {
@@ -36,6 +40,9 @@ public class PaymentController {
     @Transactional
     @GetMapping("/success")
     public String checkSuccessfulPayments(@RequestParam String sessionId) {
+        if (!stripeService.isPaid(sessionId)) {
+            return PAYMENT_ERROR;
+        }
         Payment payment = paymentService.getPaymentBySessionId(sessionId);
         payment.setStatus(Payment.Status.PAID);
         paymentService.save(payment);
