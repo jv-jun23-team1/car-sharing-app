@@ -88,7 +88,7 @@ public class CarServiceTests {
         List<CarDto> expected = new ArrayList<>();
         expected.add(carDto);
 
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
         verify(carRepository).findAll(pageable);
         verify(carMapper).toDto(car);
         verifyNoMoreInteractions(carMapper, carRepository);
