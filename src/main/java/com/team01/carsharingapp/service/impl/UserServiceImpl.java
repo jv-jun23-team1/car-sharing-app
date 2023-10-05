@@ -16,7 +16,6 @@ import com.team01.carsharingapp.service.UserService;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +43,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto getInfo() {
-        return userMapper.toDto(getUserById(getCurrentUser().getId()));
+    public UserDto getInfo(User user) {
+        return userMapper.toDto(getUserById(user.getId()));
     }
 
     @Override
@@ -53,7 +52,7 @@ public class UserServiceImpl implements UserService {
     public UserDto updateRoles(Long id, UpdateUserRoleDto updateRoleDto) {
         User user = getUserById(id);
         user.setRoles(updateRoleDto.roleIds().stream()
-                .map(this::getRoleById)
+                .map(ids -> getRoleById(ids))
                 .collect(Collectors.toSet()));
 
         return userMapper.toDto(userRepository.save(user));
@@ -61,9 +60,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto update(UpdateUserDto updateUserDto) {
-        User userFromDB = getUserById(getCurrentUser().getId());
-        userRepository.findById(getCurrentUser().getId());
+    public UserDto update(UpdateUserDto updateUserDto, User user) {
+        User userFromDB = getUserById(user.getId());
 
         return userMapper.toDto(userRepository.save(userFromDB));
     }
@@ -78,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
     private User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find user with id:" + id));
+                () -> new EntityNotFoundException("Can't find user with id: " + id));
     }
 
     private Role getRoleById(Long id) {
