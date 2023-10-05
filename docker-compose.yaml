@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    image: mysql
+    restart: on-failure
+    env_file: ./.env
+    ports:
+      - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DB
+    healthcheck:
+      test: CMD-SHELL mysqladmin ping -u root -p$MYSQL_ROOT_PASSWORD
+      interval: 30s
+      start_period: 5s
+      timeout: 30s
+      retries: 3
+
+  app:
+    restart: on-failure
+    depends_on:
+      - mysqldb
+    build: .
+    image: car-service-app
+    env_file: ./.env
+    ports:
+      - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+      - $DEBUG_PORT
+    environment:
+      JWT_SECRET: $JWT_SECRET
+      BOT_NAME: $BOT_NAME
+      BOT_TOKEN: $BOT_TOKEN
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:$MYSQL_DOCKER_PORT/$MYSQL_DB
+      SPRING_DATASOURCE_USERNAME: $MYSQL_USER
+      SPRING_DATASOURCE_PASSWORD: $MYSQL_PASSWORD
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:$DEBUG_PORT
+      STRIPE_SECRET_KEY: $STRIPE_PRIVATE_KEY
+      STRIPE_PUBLISH_KEY: $STRIPE_PUBLIC_KEY
