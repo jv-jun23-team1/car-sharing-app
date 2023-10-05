@@ -32,7 +32,7 @@ public class PaymentController {
     private final StripeService stripeService;
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "Get all payments",
             description = "Get list of user payments. Only for manager/admin")
     public List<PaymentDto> getAllPayments() {
