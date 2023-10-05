@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableMethodSecurity
 @Configuration
@@ -26,6 +27,7 @@ public class SecurityConfig {
     private static final String SWAGGER_ENDPOINT = "/swagger-ui/**";
     private static final String SUCCESS_ENDPOINT = "/payment/success/**";
     private static final String CANCEL_ENDPOINT = "/payment/cancel/**";
+    private static final String ALL_CARS_ENDPOINT = "/cars";
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -46,18 +48,20 @@ public class SecurityConfig {
                                         SUCCESS_ENDPOINT,
                                         CANCEL_ENDPOINT)
                                 .permitAll()
+                                .requestMatchers(
+                                        new AntPathRequestMatcher(ALL_CARS_ENDPOINT, "GET"))
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated()
 
                 )
                 .httpBasic(Customizer.withDefaults())
-                .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class)
+            .sessionManagement(
+                    session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .build();
-    }
+}
 
     @Bean
     public AuthenticationManager authenticationManager(
