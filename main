@@ -94,6 +94,9 @@ In our API, functionality is divided for Customers and Managers:
 
 We have integrated Swagger for easy API documentation. To access the API documentation after running the application, visit the [Swagger API documentation](http://localhost:8080/swagger-ui.html).
 
+## 🧪Postman
+To simplify the testing process, we've prepared a Postman [collection](src/main/resources/postman/car-service-postman-collection.json) and [environment](src/main/resources/postman/car-sharing-postman-environment.json) that encompass some customer and manager requests.
+
 ## 🧑Contribution
 
 We welcome contributions from the community to enhance the Bookstore project. Whether you want to fix a bug, improve an existing feature, or propose a new one, your contributions are valuable to us.
