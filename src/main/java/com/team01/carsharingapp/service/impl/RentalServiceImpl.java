@@ -71,9 +71,7 @@ public class RentalServiceImpl implements RentalService {
     ) {
         List<Rental> rentals;
         if (isManager(user)) {
-            rentals = userId == null
-                    ? rentalRepository.findAllByStatus(isActive, pageable) :
-                    rentalRepository.findAllByUserIdAndStatus(userId, isActive, pageable);
+            rentals = getRentalsByUserIdAndStatus(userId, isActive, pageable);
         } else {
             if (!Objects.equals(userId, user.getId())) {
                 throw new RentalException("User role hasn't opportunity for this");
@@ -99,6 +97,13 @@ public class RentalServiceImpl implements RentalService {
         car.setAmountAvailable(car.getAmountAvailable() + 1);
         carRepository.save(car);
         return rentalMapper.toDto(rentalRepository.save(rental));
+    }
+
+    private List<Rental> getRentalsByUserIdAndStatus(
+            Long userId, boolean isActive, Pageable pageable) {
+        return userId == null
+                ? rentalRepository.findAllByStatus(isActive, pageable) :
+                rentalRepository.findAllByUserIdAndStatus(userId, isActive, pageable);
     }
 
     private Car getAvailableCarFromDb(Long carId) {

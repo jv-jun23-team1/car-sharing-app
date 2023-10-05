@@ -135,9 +135,8 @@ class UserServiceImplTest {
         UserDto userDto = getUserDto();
         userDto.setRoleIds(Set.of(1L, 2L));
         UpdateUserRoleDto updateRoleDto = getUpdateUserRoleDto();
-        Long userId = ID_ONE;
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.findById(ID_ONE)).thenReturn(Optional.of(existingUser));
         when(roleRepository.findById(ID_ONE)).thenReturn(Optional.of(role1));
         when(roleRepository.findById(ID_TWO)).thenReturn(Optional.of(role2));
         when(userRepository.save(any(User.class))).thenAnswer(
@@ -173,19 +172,17 @@ class UserServiceImplTest {
     @Test
     void update_validUpdateUserDto_returnUserDto() {
         UpdateUserDto updateUserDto = getUpdateUserDto();
-        Long userId = ID_ONE;
         User existingUser = getValidUser();
+        User expected = getUserFromUpdateUserDto(updateUserDto);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
         when(passwordEncoder.encode(any(String.class))).thenReturn(HASHED_PASSWORD);
         when(userRepository.save(any(User.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(userMapper.toModel(updateUserDto)).thenReturn(expected);
         when(userMapper.toDto(any(User.class))).thenAnswer(invocation -> {
             User user = invocation.getArgument(0);
             return getUserDtoFromUser(user);
         });
 
-        UserDto expected = getUserDtoFromUpdateUserDto(updateUserDto);
-        expected.setId(userId);
         UserDto actual = userServiceImpl.update(updateUserDto, existingUser);
 
         assertNotNull(actual);
@@ -201,22 +198,6 @@ class UserServiceImplTest {
         assertEquals(NEW_FIRST_NAME, savedUser.getFirstName());
         assertEquals(NEW_LAST_NAME, savedUser.getLastName());
         assertEquals(HASHED_PASSWORD, savedUser.getPassword());
-    }
-
-    @Test
-    void update_UserNotFound_throwException() {
-        UpdateUserDto updateUserDto = getUpdateUserDto();
-        User user = new User();
-        user.setId(ID_ONE);
-
-        when(userRepository.findById(ID_ONE)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            userServiceImpl.update(updateUserDto, user);
-        });
-
-        assertEquals("Can't find user with id: " + ID_ONE, exception.getMessage());
-        verifyNoMoreInteractions(userRepository);
     }
 
     private Role getRoleCustomer() {
@@ -299,6 +280,17 @@ class UserServiceImplTest {
         userRegistrationResponseDto.setFirstName(user.getFirstName());
         userRegistrationResponseDto.setLastName(user.getLastName());
         return userRegistrationResponseDto;
+    }
+
+    private User getUserFromUpdateUserDto(UpdateUserDto updateUserDto) {
+        User user = new User();
+        user.setId(ID_ONE);
+        user.setEmail(updateUserDto.getEmail());
+        user.setPassword(HASHED_PASSWORD);
+        user.setFirstName(updateUserDto.getFirstName());
+        user.setLastName(updateUserDto.getLastName());
+        user.setRoles(Set.of(getRoleCustomer()));
+        return user;
     }
 
     private UserDto getUserDtoFromUpdateUserDto(UpdateUserDto updateUserDto) {
