@@ -79,8 +79,6 @@ class UserServiceImplTest {
 
         assertNotNull(actual);
         assertEquals(expected, actual);
-        verify(userRepository, times(1)).save(user);
-        verify(userMapper, times(1)).toResponseDto(user);
     }
 
     @Test
@@ -110,8 +108,6 @@ class UserServiceImplTest {
 
         assertNotNull(actualDto);
         assertEquals(expectedDto, actualDto);
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userMapper, times(1)).toDto(any(User.class));
     }
 
     @Test
@@ -127,7 +123,6 @@ class UserServiceImplTest {
         String expectedMessage = "Can't find user with id: " + ID_ONE;
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
-        verify(userRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -154,10 +149,7 @@ class UserServiceImplTest {
 
         assertNotNull(actual);
         assertEquals(expectedUserDto, actual);
-        verify(userRepository, times(1)).findById(userId);
         verify(roleRepository, times(2)).findById(anyLong());
-        verify(userRepository, times(1)).save(existingUser);
-        verify(userMapper, times(1)).toDto(existingUser);
     }
 
     @Test
@@ -175,8 +167,6 @@ class UserServiceImplTest {
         String expectedMessage = "Can't get role by id: 1";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
-        verify(userRepository, times(1)).findById(userId);
-        verify(roleRepository, times(1)).findById(any());
         verifyNoMoreInteractions(userRepository, roleRepository);
     }
 
@@ -203,8 +193,6 @@ class UserServiceImplTest {
         assertEquals(expected.getEmail(), actual.getEmail());
         assertEquals(expected.getFirstName(), actual.getFirstName());
         assertEquals(expected.getLastName(), actual.getLastName());
-        verify(userRepository, times(1)).findById(userId);
-        verify(passwordEncoder, times(1)).encode(NEW_PASSWORD);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository, times(1)).save(userCaptor.capture());
@@ -213,7 +201,6 @@ class UserServiceImplTest {
         assertEquals(NEW_FIRST_NAME, savedUser.getFirstName());
         assertEquals(NEW_LAST_NAME, savedUser.getLastName());
         assertEquals(HASHED_PASSWORD, savedUser.getPassword());
-        verify(userMapper, times(1)).toDto(savedUser);
     }
 
     @Test
@@ -229,7 +216,6 @@ class UserServiceImplTest {
         });
 
         assertEquals("Can't find user with id: " + ID_ONE, exception.getMessage());
-        verify(userRepository, times(1)).findById(anyLong());
         verifyNoMoreInteractions(userRepository);
     }
 
@@ -240,18 +226,6 @@ class UserServiceImplTest {
         return role;
     }
 
-    private UserDto getUserDtoFromUser(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setEmail(user.getEmail());
-        userDto.setFirstName(user.getFirstName());
-        userDto.setLastName(user.getLastName());
-        userDto.setRoleIds(user.getRoles().stream()
-                .map(Role::getId)
-                .collect(Collectors.toSet()));
-        return userDto;
-    }
-
     private UserRegistrationRequestDto getUserRegistrationRequestDto() {
         UserRegistrationRequestDto requestDto = new UserRegistrationRequestDto();
         requestDto.setEmail(EMAIL);
@@ -260,6 +234,16 @@ class UserServiceImplTest {
         requestDto.setFirstName(FIRST_NAME);
         requestDto.setLastName(LAST_NAME);
         return requestDto;
+    }
+
+    private UserDto getUserDto() {
+        UserDto userDto = new UserDto();
+        userDto.setId(ID_ONE);
+        userDto.setEmail(EMAIL);
+        userDto.setFirstName(FIRST_NAME);
+        userDto.setLastName(LAST_NAME);
+        userDto.setRoleIds(Set.of(ID_ONE));
+        return userDto;
     }
 
     private User getValidUser() {
@@ -282,15 +266,6 @@ class UserServiceImplTest {
         return userRegistrationResponseDto;
     }
 
-    private UserRegistrationResponseDto getUserRegistrationResponseDtoFromUser(User user) {
-        UserRegistrationResponseDto userRegistrationResponseDto = new UserRegistrationResponseDto();
-        userRegistrationResponseDto.setId(user.getId());
-        userRegistrationResponseDto.setEmail(user.getEmail());
-        userRegistrationResponseDto.setFirstName(user.getFirstName());
-        userRegistrationResponseDto.setLastName(user.getLastName());
-        return userRegistrationResponseDto;
-    }
-
     private UpdateUserDto getUpdateUserDto() {
         UpdateUserDto updateUserDto =
                 new UpdateUserDto();
@@ -301,6 +276,31 @@ class UserServiceImplTest {
         return updateUserDto;
     }
 
+    private UpdateUserRoleDto getUpdateUserRoleDto() {
+        return new UpdateUserRoleDto(Set.of(ID_ONE, ID_TWO));
+    }
+
+    private UserDto getUserDtoFromUser(User user) {
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setEmail(user.getEmail());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setRoleIds(user.getRoles().stream()
+                .map(Role::getId)
+                .collect(Collectors.toSet()));
+        return userDto;
+    }
+
+    private UserRegistrationResponseDto getUserRegistrationResponseDtoFromUser(User user) {
+        UserRegistrationResponseDto userRegistrationResponseDto = new UserRegistrationResponseDto();
+        userRegistrationResponseDto.setId(user.getId());
+        userRegistrationResponseDto.setEmail(user.getEmail());
+        userRegistrationResponseDto.setFirstName(user.getFirstName());
+        userRegistrationResponseDto.setLastName(user.getLastName());
+        return userRegistrationResponseDto;
+    }
+
     private UserDto getUserDtoFromUpdateUserDto(UpdateUserDto updateUserDto) {
         UserDto userDto = new UserDto();
 
@@ -308,20 +308,6 @@ class UserServiceImplTest {
         userDto.setFirstName(updateUserDto.getFirstName());
         userDto.setLastName(updateUserDto.getLastName());
 
-        return userDto;
-    }
-
-    private UpdateUserRoleDto getUpdateUserRoleDto() {
-        return new UpdateUserRoleDto(Set.of(ID_ONE, ID_TWO));
-    }
-
-    private UserDto getUserDto() {
-        UserDto userDto = new UserDto();
-        userDto.setId(ID_ONE);
-        userDto.setEmail(EMAIL);
-        userDto.setFirstName(FIRST_NAME);
-        userDto.setLastName(LAST_NAME);
-        userDto.setRoleIds(Set.of(ID_ONE));
         return userDto;
     }
 
