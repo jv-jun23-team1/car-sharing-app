@@ -26,6 +26,7 @@ public class StripeServiceImpl implements StripeService {
     private static final String SUCCESS_ADDITIONAL_PARAMS
             = "?sessionId={CHECKOUT_SESSION_ID}";
     private static final String CANCEL_ENDPOINT = "/cancel";
+    private static final String PAID_STATUS = "paid";
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
     @Value("${stripe.url.api}")
@@ -44,6 +45,21 @@ public class StripeServiceImpl implements StripeService {
         stripeDto.setSessionId(session.getId());
         stripeDto.setSessionUrl(session.getUrl());
         return stripeDto;
+    }
+
+    @Override
+    public boolean isPaid(String id) {
+        Stripe.apiKey = stripeSecretKey;
+        try {
+            Session session = Session.retrieve(id);
+            String paymentStatus = session.getPaymentStatus();
+            if (PAID_STATUS.equals(paymentStatus)) {
+                return true;
+            }
+        } catch (StripeException e) {
+            throw new PaymentException("Can't retrieve session for checking pay!", e);
+        }
+        return false;
     }
 
     private Product createProduct(String productName) {

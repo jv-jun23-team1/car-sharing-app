@@ -3,7 +3,9 @@ package com.team01.carsharingapp.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.team01.carsharingapp.dto.car.request.CreateCarRequestDto;
@@ -14,6 +16,7 @@ import com.team01.carsharingapp.model.Car;
 import com.team01.carsharingapp.repository.CarRepository;
 import com.team01.carsharingapp.service.impl.CarServiceImpl;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -23,6 +26,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class CarServiceTests {
@@ -71,15 +78,22 @@ public class CarServiceTests {
     public void getAll_OneCar_ReturnsCorrectList() {
         Car car = createValidCar();
         List<Car> cars = List.of(car);
+        Page<Car> carPage = new PageImpl<>(cars);
         CarDto carDto = getCarDtoFromCar(car);
-        List<CarDto> expected = List.of(carDto);
+        Pageable pageable = PageRequest.of(0, 1);
 
-        when(carRepository.findAll()).thenReturn(cars);
+        when(carRepository.findAll(pageable)).thenReturn(carPage);
         when(carMapper.toDto(car)).thenReturn(carDto);
 
-        List<CarDto> actual = carService.getAll();
+        List<CarDto> actual = carService.getAll(pageable);
+
+        List<CarDto> expected = new ArrayList<>();
+        expected.add(carDto);
 
         assertEquals(expected, actual);
+        verify(carRepository).findAll(pageable);
+        verify(carMapper).toDto(car);
+        verifyNoMoreInteractions(carMapper, carRepository);
     }
 
     @Test
