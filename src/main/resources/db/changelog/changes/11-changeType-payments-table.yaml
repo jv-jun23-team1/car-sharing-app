@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: changeType-payments-table
+      author: Vladyslav Ihnatiuk
+      changes:
+        - modifyDataType:
+            tableName: payments
+            columnName: session_id
+            newDataType: varchar(255)
+        - modifyDataType:
+            tableName: payments
+            columnName: session_url
+            newDataType: varchar(600)
