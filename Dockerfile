@@ -12,5 +12,10 @@ COPY --from=builder application/dependencies/ ./
 COPY --from=builder application/spring-boot-loader/ ./
 COPY --from=builder application/snapshot-dependencies/ ./
 COPY --from=builder application/application/ ./
-ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
+
+ADD https://github.com/vishnubob/wait-for-it/raw/master/wait-for-it.sh wait-for-it.sh
+RUN chmod +x wait-for-it.sh
+
+CMD ["./wait-for-it.sh", "mysqldb:$MYSQL_DOCKER_PORT", "--", "java", "org.springframework.boot.loader.JarLauncher"]
 EXPOSE 8080
+
