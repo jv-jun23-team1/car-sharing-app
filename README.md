@@ -60,7 +60,7 @@ docker-compose up
 ```
 That's all you need to know to start! 🎉
 
-## Features
+## ✈️Features
 
 ### Security:
 
@@ -90,11 +90,11 @@ In our API, functionality is divided for Customers and Managers:
 | RentalController         | Create a new rental, get list of own rentals by status, get details of own rental by id, return car | Get list or details of any rentals   |
 | UserController           | Get public information about account, update data                                                   | Change user roles                    |
 
-## Swagger
+## 🚀Swagger
 
 We have integrated Swagger for easy API documentation. To access the API documentation after running the application, visit the [Swagger API documentation](http://localhost:8080/swagger-ui.html).
 
-## Contribution
+## 🧑Contribution
 
 We welcome contributions from the community to enhance the Bookstore project. Whether you want to fix a bug, improve an existing feature, or propose a new one, your contributions are valuable to us.
 
