@@ -60,6 +60,7 @@ public class StripeServiceImpl implements StripeService {
             throw new PaymentException("Can't retrieve session for checking pay!", e);
         }
         return false;
+    }
 
     private Product createProduct(String productName) {
         ProductCreateParams productParams = new ProductCreateParams.Builder()
@@ -73,7 +74,6 @@ public class StripeServiceImpl implements StripeService {
                     + productName, e);
         }
         return product;
-
     }
 
     private Price createPrice(Product product, Long totalAmount, String currency) {

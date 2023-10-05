@@ -83,6 +83,7 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.findAll().stream()
                 .map(paymentMapper::toDto)
                 .toList();
+    }
 
     @Transactional
     @Override
