@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -66,6 +67,15 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void save(Payment payment) {
         paymentRepository.save(payment);
+    }
+
+    @Transactional
+    @Override
+    public boolean setPaymentSuccessStatus(String sessionId) {
+        Payment payment = getPaymentBySessionId(sessionId);
+        payment.setStatus(Payment.Status.PAID);
+        save(payment);
+        return true;
     }
 
     private BigDecimal calculateRentalCost(LocalDate startDate,

@@ -42,10 +42,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponseDto(userRepository.save(user));
     }
 
-    public User getCurrentUser() {
-        return (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-
     @Override
     @Transactional
     public UserDto getInfo() {
@@ -69,24 +65,15 @@ public class UserServiceImpl implements UserService {
         User userFromDB = getUserById(getCurrentUser().getId());
         userRepository.findById(getCurrentUser().getId());
 
-        if (updateUserDto.getEmail() != null) {
-            userFromDB.setEmail(updateUserDto.getEmail());
-        }
-        if (updateUserDto.getFirstName() != null) {
-            userFromDB.setFirstName(updateUserDto.getFirstName());
-        }
-        if (updateUserDto.getLastName() != null) {
-            userFromDB.setLastName(updateUserDto.getLastName());
-        }
-        if (updateUserDto.getPassword() != null) {
-            userFromDB.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
-        }
-
         return userMapper.toDto(userRepository.save(userFromDB));
     }
 
     private boolean existInDataBase(String username) {
         return userRepository.findByEmail(username).isPresent();
+    }
+
+    private User getCurrentUser() {
+        return (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     private User getUserById(Long id) {

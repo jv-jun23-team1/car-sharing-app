@@ -22,13 +22,14 @@ public class StripeServiceImpl implements StripeService {
     private static final int CONVERT_CENT = 100;
     private static final Long MAX_QUANTITY = 1L;
     private static final Long EXPIRATION_TIME = Instant.now().getEpochSecond() + 86400L;
-    private static final String URL_API = "http://localhost:8080/api/payment";
     private static final String SUCCESS_ENDPOINT = "/success";
     private static final String SUCCESS_ADDITIONAL_PARAMS
             = "?sessionId={CHECKOUT_SESSION_ID}";
     private static final String CANCEL_ENDPOINT = "/cancel";
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
+    @Value("${stripe.url.api}")
+    private String urlApi;
 
     @Override
     public StripeDto pay(Payment payment, String currency) {
@@ -38,10 +39,25 @@ public class StripeServiceImpl implements StripeService {
         Product product = createProduct(payment.getRental().getCar().getModel());
         Price price = createPrice(product, totalAmount, currency);
         Session session = createSession(price);
+
         StripeDto stripeDto = new StripeDto();
         stripeDto.setSessionId(session.getId());
         stripeDto.setSessionUrl(session.getUrl());
         return stripeDto;
+    }
+
+    private Product createProduct(String productName) {
+        ProductCreateParams productParams = new ProductCreateParams.Builder()
+                .setName(productName)
+                .build();
+        Product product;
+        try {
+            product = Product.create(productParams);
+        } catch (StripeException e) {
+            throw new PaymentException("Can't create product with product name: "
+                    + productName, e);
+        }
+        return product;
     }
 
     private Price createPrice(Product product, Long totalAmount, String currency) {
@@ -61,20 +77,6 @@ public class StripeServiceImpl implements StripeService {
         return price;
     }
 
-    private Product createProduct(String productName) {
-        ProductCreateParams productParams = new ProductCreateParams.Builder()
-                .setName(productName)
-                .build();
-        Product product;
-        try {
-            product = Product.create(productParams);
-        } catch (StripeException e) {
-            throw new PaymentException("Can't create product with product name: "
-                    + productName, e);
-        }
-        return product;
-    }
-
     private Session createSession(Price price) {
         SessionCreateParams sessionCreateParams = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
@@ -83,10 +85,10 @@ public class StripeServiceImpl implements StripeService {
                         .setQuantity(MAX_QUANTITY)
                         .build())
                 .setExpiresAt(EXPIRATION_TIME)
-                .setSuccessUrl(URL_API
+                .setSuccessUrl(urlApi
                         + SUCCESS_ENDPOINT
                         + SUCCESS_ADDITIONAL_PARAMS)
-                .setCancelUrl(URL_API + CANCEL_ENDPOINT)
+                .setCancelUrl(urlApi + CANCEL_ENDPOINT)
                 .build();
         Session session;
         try {
