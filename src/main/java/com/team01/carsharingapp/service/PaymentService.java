@@ -15,4 +15,6 @@ public interface PaymentService {
     Payment getPaymentBySessionId(String sessionId);
 
     void save(Payment payment);
+
+    boolean setPaymentSuccessStatus(String sessionId);
 }
