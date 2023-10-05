@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: modify-payment-table
+      author: Mykyta Zuber
+      changes:
+        - update:
+            tableName: payments
+            columns:
+              - column:
+                  name: session_url
+                  type: varchar(600)
+              - column:
+                  name: session_id
+                  type: varchar(255)

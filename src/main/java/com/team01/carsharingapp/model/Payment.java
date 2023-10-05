@@ -37,7 +37,7 @@ public class Payment {
     @Column(nullable = false)
     private String sessionUrl;
     @Column(nullable = false)
-    private Long sessionId;
+    private String sessionId;
     @Column(nullable = false)
     private BigDecimal price;
     @Enumerated(EnumType.STRING)
@@ -46,6 +46,7 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Type type;
+    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 

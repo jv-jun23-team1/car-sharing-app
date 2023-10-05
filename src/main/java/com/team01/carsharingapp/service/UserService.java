@@ -12,11 +12,9 @@ public interface UserService {
     UserRegistrationResponseDto register(UserRegistrationRequestDto requestDto)
             throws RegistrationException;
 
-    User getCurrentUser();
-
-    UserDto getInfo();
+    UserDto getInfo(User user);
 
     UserDto updateRoles(Long id, UpdateUserRoleDto userRoleDto);
 
-    UserDto update(UpdateUserDto updateUserDto);
+    UserDto update(UpdateUserDto updateUserDto, User user);
 }

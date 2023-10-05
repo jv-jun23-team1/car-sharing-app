@@ -17,3 +17,5 @@ databaseChangeLog:
       file: db/changelog/changes/08-insert-manager-user.yaml
   - include:
       file: db/changelog/changes/09-modify-roles-into-roles-table.yaml
+  - include:
+      file: db/changelog/changes/11-changeType-payments-table.yaml
