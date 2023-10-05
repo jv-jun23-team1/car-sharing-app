@@ -39,8 +39,8 @@ public class CarController {
 
     @GetMapping
     @Operation(summary = "Get all cars", description = "Get list of available cars.")
-    public List<CarDto> getAll() {
-        return carService.getAll();
+    public List<CarDto> getAll(Pageable pageable) {
+        return carService.getAll(pageable);
     }
 
     @GetMapping("/{id}")
