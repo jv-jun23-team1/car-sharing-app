@@ -1,0 +1,27 @@
+{
+	"id": "f68fec0a-571c-465b-bd10-79afce3e333c",
+	"name": "Car Sharing API",
+	"values": [
+		{
+			"key": "BearerToken",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "host",
+			"value": "localhost",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "port",
+			"value": "8080",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2023-10-05T20:14:42.111Z",
+	"_postman_exported_using": "Postman/10.18.9"
+}
