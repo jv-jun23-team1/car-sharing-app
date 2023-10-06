@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-all-telegram-tables
+      author: kVlad
+      changes:
+        - createTable:
+            tableName: telegram_user
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: chat_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: notification_subscription
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: telegram_user_subscription
+            columns:
+              - column:
+                  name: telegram_user_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: telegram.user.id
+                    referencedTableName: telegram_user
+                    referencedColumnNames: id
+                    nullable: false
+              - column:
+                  name: subscription_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: telegram.subscription.id
+                    referencedTableName: notification_subscription
+                    referencedColumnNames: id
+                    nullable: false
