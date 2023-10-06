@@ -47,6 +47,8 @@ public class RentalServiceTests {
     private CarRepository carRepository;
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
+    @Mock
+    private PaymentService paymentService;
 
     @Test
     @DisplayName("Get rental dto by valid id")
@@ -70,6 +72,7 @@ public class RentalServiceTests {
         Rental rental = getValidRental();
         RentalDto expected = getRentalDtoFromRental();
 
+        when(paymentService.getPaymentsByUserId(anyLong())).thenReturn(List.of());
         when(carRepository.findById(anyLong())).thenReturn(Optional.of(car));
         when(carRepository.save(any(Car.class))).thenReturn(returnedCar);
         when(rentalRepository.save(any(Rental.class))).thenReturn(rental);
