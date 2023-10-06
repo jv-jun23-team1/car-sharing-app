@@ -1,28 +1,28 @@
 package com.team01.carsharingapp.telegramapi;
 
+import com.team01.carsharingapp.event.TelegramMethodEvent;
 import com.team01.carsharingapp.exception.TelegramException;
+import jakarta.annotation.PostConstruct;
+import org.springframework.context.event.EventListener;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class Bot extends TelegramLongPollingBot {
     private final String botUsername;
-    private final Long chatId;
+    private final UpdateHandler updateHandler;
 
-    public Bot(String botUsername, String botToken, Long chatId) {
+    public Bot(String botUsername, String botToken, UpdateHandler updateHandler) {
         super(botToken);
         this.botUsername = botUsername;
-        this.chatId = chatId;
+        this.updateHandler = updateHandler;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().getText().equals("/start")) {
-            sendMessage("Hello mate");
-        } else {
-            sendMessage("Unknown command");
-        }
+        updateHandler.handle(update);
     }
 
     @Override
@@ -30,14 +30,23 @@ public class Bot extends TelegramLongPollingBot {
         return botUsername;
     }
 
-    public void sendMessage(String message) {
+    @EventListener
+    private void complete(TelegramMethodEvent event) {
         try {
-            execute(SendMessage.builder()
-                    .chatId(chatId)
-                    .text(message)
-                    .build());
+            execute(event.getMethod());
+        } catch (Exception e) {
+            throw new TelegramException("Can't execute method = " + event.getMethod()
+            + " source = " + event.getSource());
+        }
+    }
+
+    @PostConstruct
+    private void init() {
+        try {
+            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+            telegramBotsApi.registerBot(this);
         } catch (TelegramApiException e) {
-            throw new TelegramException("Can't execute SendMessage for message = " + message);
+            throw new TelegramException("Can't initialize Bot");
         }
     }
 }
