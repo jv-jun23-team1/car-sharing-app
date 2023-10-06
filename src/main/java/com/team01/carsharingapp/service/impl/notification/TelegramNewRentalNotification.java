@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TelegramNewRentalNotification {
+    private static final String HEADER =
+            NotificationSubscription.SubscriptionType.NEW_RENT.getText() + ": ";
     private static final String CREATE_RENTAL_MESSAGE =
-            "NEW RENTAL : Customer - %s, expected return date - %s, car - %s";
+            HEADER + "Клієнт - %s, очікувана дата повернення - %s, машина - %s";
     private final TelegramNotificationService telegramNotificationService;
 
     @EventListener

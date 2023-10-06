@@ -11,14 +11,16 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TelegramPaymentNotification {
-    private static final String CREATE_RENTAL_MESSAGE = """
-            PAID : Customer - %s,
-            Price - %.2f
-            Payment type - %s,
-            Rental :
-              Car - %s
-              Expected return date - %s,
-              Actual return date - %s
+    private static final String HEADER =
+            NotificationSubscription.SubscriptionType.PAYMENT_COMPLETE.getText() + ": ";
+    private static final String CREATE_RENTAL_MESSAGE = HEADER + """
+            Клієнт - %s,
+            Сума - %.2f
+            Тип оплати - %s,
+            Оренда :
+              Машина - %s
+              Очікувана дата повернення - %s,
+              Фактична дата повернення - %s
             """;
     private final TelegramNotificationService telegramNotificationService;
 

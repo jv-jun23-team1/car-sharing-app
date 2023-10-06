@@ -15,9 +15,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TelegramDailyOverdueNotification {
-    private static final String NO_OVERDUE_MESSAGE = "No rentals overdue today!";
+    private static final String HEADER =
+            NotificationSubscription.SubscriptionType.DAILY_OVERDUE.getText() + ": ";
+    private static final String NO_OVERDUE_MESSAGE =
+            HEADER + "Сьогодні немає простроченої орендної плати!";
     private static final String OVERDUE_MESSAGE =
-            "Customer - %s, expected return date - %s, car - %s";
+            "Клієнт - %s, очікувана дата повернення - %s, машина - %s";
+    private static final String LONG_HEADER = HEADER + " звіт по просроченій оренді на ";
     private final RentalRepository rentalRepository;
     private final TelegramNotificationService telegramNotificationService;
 
@@ -33,7 +37,8 @@ public class TelegramDailyOverdueNotification {
     }
 
     private String buildOverdueMessage(List<Rental> overdue) {
-        return overdue.stream()
+        String actualHeader = LONG_HEADER + LocalDate.now() + System.lineSeparator();
+        return actualHeader + overdue.stream()
                 .sorted(rentalReturnDateComparator())
                 .map(buildMessageFunction())
                 .collect(Collectors.joining(System.lineSeparator()));
