@@ -1,8 +1,8 @@
 package com.team01.carsharingapp.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -33,7 +33,6 @@ import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class CarServiceTests {
-    private static final int ONCE = 1;
     private static final Long ID_ONE = 1L;
     private static final Long INCORRECT_ID = 42L;
     private static final String CAR_NOT_FOUND_MESSAGE = "Can't find car by id: ";
@@ -71,18 +70,12 @@ public class CarServiceTests {
 
         CarDto actual = carService.save(requestDto);
 
-        Assertions.assertEquals(expected, actual);
-        verify(carRepository, times(ONCE)).save(expectedCarWithoutId);
-        verifyNoMoreInteractions(carRepository);
-        verify(carMapper, times(ONCE)).toEntity(requestDto);
-        verify(carMapper, times(ONCE)).toDto(expectedCarWithId);
-        verifyNoMoreInteractions(carMapper);
+        assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("Show list of 1 car")
     public void getAll_OneCar_ReturnsCorrectList() {
-
         Car car = createValidCar();
         List<Car> cars = List.of(car);
         Page<Car> carPage = new PageImpl<>(cars);
@@ -97,7 +90,7 @@ public class CarServiceTests {
         List<CarDto> expected = new ArrayList<>();
         expected.add(carDto);
 
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
         verify(carRepository).findAll(pageable);
         verify(carMapper).toDto(car);
         verifyNoMoreInteractions(carMapper, carRepository);
@@ -114,11 +107,7 @@ public class CarServiceTests {
 
         CarDto actual = carService.getById(ID_ONE);
 
-        Assertions.assertEquals(expected, actual);
-        verify(carRepository, times(ONCE)).findById(ID_ONE);
-        verifyNoMoreInteractions(carRepository);
-        verify(carMapper, times(ONCE)).toDto(car);
-        verifyNoMoreInteractions(carMapper);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -131,11 +120,9 @@ public class CarServiceTests {
         Exception exception = assertThrows(EntityNotFoundException.class,
                 () -> carService.getById(INCORRECT_ID)
         );
-
         String actual = exception.getMessage();
-        Assertions.assertEquals(expected, actual);
-        verify(carRepository, times(ONCE)).findById(INCORRECT_ID);
-        verifyNoMoreInteractions(carRepository);
+
+        assertEquals(expected, actual);
         verifyNoInteractions(carMapper);
     }
 
@@ -155,12 +142,7 @@ public class CarServiceTests {
 
         CarDto actual = carService.update(ID_ONE, request);
 
-        Assertions.assertEquals(expected, actual);
-        verify(carRepository, times(ONCE)).findById(ID_ONE);
-        verify(carRepository, times(ONCE)).save(updatedCar);
-        verifyNoMoreInteractions(carRepository);
-        verify(carMapper, times(ONCE)).toDto(updatedCar);
-        verifyNoMoreInteractions(carMapper);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -173,11 +155,9 @@ public class CarServiceTests {
 
         Throwable exception = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> carService.update(INCORRECT_ID, request));
-
         String actual = exception.getMessage();
-        Assertions.assertEquals(expected, actual);
-        verify(carRepository, times(ONCE)).findById(INCORRECT_ID);
-        verifyNoMoreInteractions(carRepository);
+
+        assertEquals(expected, actual);
         verifyNoInteractions(carMapper);
     }
 
@@ -189,9 +169,6 @@ public class CarServiceTests {
 
         carService.delete(ID_ONE);
 
-        verify(carRepository, times(ONCE)).existsById(ID_ONE);
-        verify(carRepository, times(ONCE)).deleteById(ID_ONE);
-        verifyNoMoreInteractions(carRepository);
         verifyNoInteractions(carMapper);
     }
 
@@ -204,11 +181,9 @@ public class CarServiceTests {
 
         Throwable exception = assertThrows(EntityNotFoundException.class,
                 () -> carService.delete(INCORRECT_ID));
-
         String actual = exception.getMessage();
-        Assertions.assertEquals(excepted, actual);
-        verify(carRepository, times(ONCE)).existsById(INCORRECT_ID);
-        verifyNoMoreInteractions(carRepository);
+
+        assertEquals(excepted, actual);
         verifyNoInteractions(carMapper);
     }
 

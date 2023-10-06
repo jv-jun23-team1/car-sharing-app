@@ -31,8 +31,7 @@ public class RentalController {
     public RentalDto getById(
             @PathVariable Long id
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return rentalService.getById(user, id);
+        return rentalService.getById(getCurrentUser(), id);
     }
 
     @GetMapping("/")
@@ -47,8 +46,7 @@ public class RentalController {
             @RequestParam(name = "is_active") Boolean isActive,
             Pageable pageable
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return rentalService.getByUserIdAndStatus(user, userId, isActive, pageable);
+        return rentalService.getByUserIdAndStatus(getCurrentUser(), userId, isActive, pageable);
     }
 
     @PostMapping
@@ -57,8 +55,7 @@ public class RentalController {
     public RentalDto create(
             @RequestBody @Valid CreateRentalRequestDto requestDto
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return rentalService.create(user, requestDto);
+        return rentalService.create(getCurrentUser(), requestDto);
     }
 
     @PostMapping("/return/{id}")
@@ -66,7 +63,10 @@ public class RentalController {
     public RentalDto carReturnByRentalId(
             @PathVariable Long id
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return rentalService.carReturnByRentalId(user, id);
+        return rentalService.carReturnByRentalId(getCurrentUser(), id);
+    }
+
+    private User getCurrentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
