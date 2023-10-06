@@ -6,16 +6,16 @@ databaseChangeLog:
         - insert:
             tableName: users
             columns:
-              - column: {name: email, value: "admin@mail.com"}
-              - column: {name: password, value: "$2a$10$Ksm5ljThLGg8usqTYxxXHO9.oufbb7ZOGNcdQ8v1LvBY2BbWA5oii"}
-              - column: {name: first_name, value: "admin"}
-              - column: {name: last_name, value: "admin"}
-              - column: {name: is_deleted, valueBoolean: "false"}
+              - column: { name: email, value: "admin@mail.com" }
+              - column: { name: password, value: "$2a$10$Ksm5ljThLGg8usqTYxxXHO9.oufbb7ZOGNcdQ8v1LvBY2BbWA5oii" }
+              - column: { name: first_name, value: "admin" }
+              - column: { name: last_name, value: "admin" }
+              - column: { name: is_deleted, valueBoolean: "false" }
         - insert:
             tableName: users_roles
             columns:
-              - column: {name: user_id, value: "1"}
-              - column: {name: role_id, value: "1"}
+              - column: { name: user_id, value: "1" }
+              - column: { name: role_id, value: "1" }
         - insert:
             tableName: users_roles
             columns:
