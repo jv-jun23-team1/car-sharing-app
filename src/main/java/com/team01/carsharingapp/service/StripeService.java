@@ -8,4 +8,6 @@ public interface StripeService {
                   String currency);
 
     boolean isPaid(String id);
+
+    boolean isExpired(String id);
 }

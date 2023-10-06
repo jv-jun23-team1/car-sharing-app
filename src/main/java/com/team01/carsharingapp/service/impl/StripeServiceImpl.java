@@ -27,6 +27,7 @@ public class StripeServiceImpl implements StripeService {
             = "?sessionId={CHECKOUT_SESSION_ID}";
     private static final String CANCEL_ENDPOINT = "/cancel";
     private static final String PAID_STATUS = "paid";
+    private static final String EXPIRED_STATUS = "expired";
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
     @Value("${stripe.url.api}")
@@ -34,7 +35,7 @@ public class StripeServiceImpl implements StripeService {
 
     @Override
     public StripeDto pay(Payment payment, String currency) {
-        Stripe.apiKey = stripeSecretKey;
+        setApiKeyStripe();
         Long totalAmount = payment.getPrice()
                 .multiply(BigDecimal.valueOf(CONVERT_CENT)).longValue();
         Product product = createProduct(payment.getRental().getCar().getModel());
@@ -49,11 +50,26 @@ public class StripeServiceImpl implements StripeService {
 
     @Override
     public boolean isPaid(String id) {
-        Stripe.apiKey = stripeSecretKey;
+        setApiKeyStripe();
         try {
             Session session = Session.retrieve(id);
             String paymentStatus = session.getPaymentStatus();
             if (PAID_STATUS.equals(paymentStatus)) {
+                return true;
+            }
+        } catch (StripeException e) {
+            throw new PaymentException("Can't retrieve session for checking pay!", e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isExpired(String id) {
+        setApiKeyStripe();
+        try {
+            Session session = Session.retrieve(id);
+            String paymentStatus = session.getPaymentStatus();
+            if (EXPIRED_STATUS.equals(paymentStatus)) {
                 return true;
             }
         } catch (StripeException e) {
@@ -114,5 +130,9 @@ public class StripeServiceImpl implements StripeService {
                     + price.getId(), e);
         }
         return session;
+    }
+
+    private void setApiKeyStripe() {
+        Stripe.apiKey = stripeSecretKey;
     }
 }

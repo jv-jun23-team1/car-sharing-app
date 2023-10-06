@@ -38,6 +38,12 @@ public class PaymentController {
     public List<PaymentDto> getAllPayments() {
         return paymentService.getAllPayments();
     }
+    
+    @GetMapping("/renewal")
+    @Operation()
+    public PaymentDto paymentRenewal(@RequestParam("user_id") Long userId) {
+        return paymentService.paymentRenewal(userId);
+    }
 
     @GetMapping
     @Operation(summary = "Get all payments by user ID", description = "Get list of user payments.")

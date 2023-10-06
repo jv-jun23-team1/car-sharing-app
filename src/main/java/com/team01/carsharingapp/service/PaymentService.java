@@ -17,4 +17,8 @@ public interface PaymentService {
     List<PaymentDto> getAllPayments();
   
     boolean setPaymentSuccessStatus(String sessionId);
+
+    String getCurrency();
+
+    PaymentDto paymentRenewal(Long rentalId);
 }
