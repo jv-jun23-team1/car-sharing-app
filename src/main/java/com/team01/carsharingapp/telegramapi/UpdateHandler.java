@@ -114,7 +114,7 @@ public class UpdateHandler {
         return SendMessage.builder()
                 .chatId(user.getChatId())
                 .replyMarkup(replySubscriptionKeyboard(filtered))
-                .text(UNSUBSCRIBE_TEXT + text + "\"")
+                .text(UNSUBSCRIBE_TEXT + typeText + "\"")
                 .build();
     }
 
