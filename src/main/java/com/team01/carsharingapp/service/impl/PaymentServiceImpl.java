@@ -5,6 +5,7 @@ import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
 import com.team01.carsharingapp.dto.stripe.StripeDto;
 import com.team01.carsharingapp.event.PaymentEvent;
 import com.team01.carsharingapp.exception.EntityNotFoundException;
+import com.team01.carsharingapp.exception.PaymentException;
 import com.team01.carsharingapp.mapper.PaymentMapper;
 import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.model.Rental;
@@ -38,6 +39,16 @@ public class PaymentServiceImpl implements PaymentService {
                         () -> new EntityNotFoundException("Rental with id: "
                         + requestDto.rentalId() + " not exist")
         );
+        List<Payment> allPaymentByUserId = paymentRepository
+                .findAllByUserId(rentalById.getUser().getId());
+        if (!allPaymentByUserId.isEmpty()) {
+            for (Payment currentPayment : allPaymentByUserId) {
+                if (currentPayment.getStatus() == Payment.Status.PENDING) {
+                    throw new PaymentException("You must pay previous rental - "
+                            + paymentMapper.toDto(currentPayment).toString());
+                }
+            }
+        }
         Payment payment = createPaymentEntity(rentalById, requestDto);
 
         StripeDto sessionInfo = stripeService.pay(payment, CURRENCY);
@@ -98,6 +109,20 @@ public class PaymentServiceImpl implements PaymentService {
         return true;
     }
 
+    @Override
+    public String getCurrency() {
+        return CURRENCY;
+    }
+
+    @Override
+    public PaymentDto paymentRenewal(Long rentalId) {
+        Payment byRentalId = paymentRepository.findByRentalId(rentalId);
+        StripeDto pay = stripeService.pay(byRentalId, CURRENCY);
+        byRentalId.setSessionId(pay.getSessionId());
+        byRentalId.setSessionUrl(pay.getSessionUrl());
+        return paymentMapper.toDto(paymentRepository.save(byRentalId));
+    }
+
     private BigDecimal calculateRentalCost(LocalDate startDate,
                                            LocalDate endDate,
                                            BigDecimal dailyRate) {
@@ -112,7 +137,7 @@ public class PaymentServiceImpl implements PaymentService {
     private Payment createPaymentEntity(Rental rentalById,
                                         PaymentRequestDto requestDto) {
         if (rentalById == null) {
-            throw new IllegalArgumentException("rentalById "
+            throw new NullPointerException("rentalById "
                     + "cannot be null");
         }
         Payment payment = paymentMapper.toEntity(requestDto);
