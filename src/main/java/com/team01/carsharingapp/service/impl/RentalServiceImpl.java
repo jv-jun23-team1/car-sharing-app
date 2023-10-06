@@ -1,5 +1,6 @@
 package com.team01.carsharingapp.service.impl;
 
+import com.team01.carsharingapp.dto.payment.PaymentDto;
 import com.team01.carsharingapp.dto.rental.CreateRentalRequestDto;
 import com.team01.carsharingapp.dto.rental.RentalDto;
 import com.team01.carsharingapp.event.CreateRentalEvent;
@@ -7,11 +8,13 @@ import com.team01.carsharingapp.exception.EntityNotFoundException;
 import com.team01.carsharingapp.exception.RentalException;
 import com.team01.carsharingapp.mapper.RentalMapper;
 import com.team01.carsharingapp.model.Car;
+import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.model.Rental;
 import com.team01.carsharingapp.model.Role;
 import com.team01.carsharingapp.model.User;
 import com.team01.carsharingapp.repository.CarRepository;
 import com.team01.carsharingapp.repository.RentalRepository;
+import com.team01.carsharingapp.service.PaymentService;
 import com.team01.carsharingapp.service.RentalService;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
@@ -29,6 +32,7 @@ public class RentalServiceImpl implements RentalService {
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final CarRepository carRepository;
+    private final PaymentService paymentService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
@@ -53,6 +57,7 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalDto create(User user, CreateRentalRequestDto requestDto) {
+        checkRentalAbility(user);
         checkTime(requestDto.returnDate());
         Rental rental = new Rental();
         rental.setCar(getAvailableCarFromDb(requestDto.carId()));
@@ -97,6 +102,18 @@ public class RentalServiceImpl implements RentalService {
         car.setAmountAvailable(car.getAmountAvailable() + 1);
         carRepository.save(car);
         return rentalMapper.toDto(rentalRepository.save(rental));
+    }
+
+    private void checkRentalAbility(User user) {
+        Optional<PaymentDto> overdue = paymentService.getPaymentsByUserId(user.getId()).stream()
+                .filter(p -> p.getStatus().equals(Payment.Status.PENDING))
+                .findFirst();
+        if (overdue.isPresent()) {
+            throw new RentalException(
+                    "User has bill pending, can't rent new car until pay for bill. UserId = "
+                            + user.getId()
+            );
+        }
     }
 
     private List<Rental> getRentalsByUserIdAndStatus(
