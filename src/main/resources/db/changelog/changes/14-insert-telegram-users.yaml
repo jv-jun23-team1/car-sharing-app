@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-telegram-users
+      author: kVlad
+      changes:
+        - insert:
+            tableName: telegram_user
+            columns:
+              - column: {name: chat_id, value: 387100384}
+        - insert:
+            tableName: telegram_user
+            columns:
+              - column: {name: chat_id, value: 332128469}
+        - insert:
+            tableName: telegram_user
+            columns:
+              - column: {name: chat_id, value: 320474708}

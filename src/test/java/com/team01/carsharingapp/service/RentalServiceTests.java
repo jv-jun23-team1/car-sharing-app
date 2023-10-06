@@ -9,9 +9,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.team01.carsharingapp.dto.car.response.CarDto;
-import com.team01.carsharingapp.dto.rental.CreateRentalEvent;
 import com.team01.carsharingapp.dto.rental.CreateRentalRequestDto;
 import com.team01.carsharingapp.dto.rental.RentalDto;
+import com.team01.carsharingapp.event.CreateRentalEvent;
 import com.team01.carsharingapp.mapper.RentalMapper;
 import com.team01.carsharingapp.model.Car;
 import com.team01.carsharingapp.model.Rental;

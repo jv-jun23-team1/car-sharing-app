@@ -3,6 +3,7 @@ package com.team01.carsharingapp.service.impl;
 import com.team01.carsharingapp.dto.payment.PaymentDto;
 import com.team01.carsharingapp.dto.payment.PaymentRequestDto;
 import com.team01.carsharingapp.dto.stripe.StripeDto;
+import com.team01.carsharingapp.event.PaymentEvent;
 import com.team01.carsharingapp.exception.EntityNotFoundException;
 import com.team01.carsharingapp.mapper.PaymentMapper;
 import com.team01.carsharingapp.model.Payment;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final RentalRepository rentalRepository;
     private final PaymentMapper paymentMapper;
     private final StripeService stripeService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public PaymentDto createPayment(PaymentRequestDto requestDto) {
@@ -91,6 +94,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = getPaymentBySessionId(sessionId);
         payment.setStatus(Payment.Status.PAID);
         save(payment);
+        applicationEventPublisher.publishEvent(PaymentEvent.of(this, payment));
         return true;
     }
 

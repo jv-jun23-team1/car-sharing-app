@@ -1,8 +1,8 @@
 package com.team01.carsharingapp.service.impl;
 
-import com.team01.carsharingapp.dto.rental.CreateRentalEvent;
 import com.team01.carsharingapp.dto.rental.CreateRentalRequestDto;
 import com.team01.carsharingapp.dto.rental.RentalDto;
+import com.team01.carsharingapp.event.CreateRentalEvent;
 import com.team01.carsharingapp.exception.EntityNotFoundException;
 import com.team01.carsharingapp.exception.RentalException;
 import com.team01.carsharingapp.mapper.RentalMapper;

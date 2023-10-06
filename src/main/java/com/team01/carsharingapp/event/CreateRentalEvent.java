@@ -1,4 +1,4 @@
-package com.team01.carsharingapp.dto.rental;
+package com.team01.carsharingapp.event;
 
 import com.team01.carsharingapp.model.Rental;
 import lombok.Getter;

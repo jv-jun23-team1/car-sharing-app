@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-subscriptions
+      author: kVlad
+      changes:
+        - insert:
+            tableName: notification_subscription
+            columns:
+              - column: {name: type, value: "DAILY_OVERDUE"}
+        - insert:
+            tableName: notification_subscription
+            columns:
+              - column: {name: type, value: "NEW_RENT"}
+        - insert:
+            tableName: notification_subscription
+            columns:
+              - column: {name: type, value: "PAYMENT_COMPLETE"}

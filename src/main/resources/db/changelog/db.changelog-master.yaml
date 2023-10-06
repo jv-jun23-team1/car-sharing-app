@@ -19,3 +19,9 @@ databaseChangeLog:
       file: db/changelog/changes/09-modify-roles-into-roles-table.yaml
   - include:
       file: db/changelog/changes/11-changeType-payments-table.yaml
+  - include:
+      file: db/changelog/changes/12-create-telegram-tables.yaml
+  - include:
+      file: db/changelog/changes/13-insert-subscriptions.yaml
+  - include:
+      file: db/changelog/changes/14-insert-telegram-users.yaml
