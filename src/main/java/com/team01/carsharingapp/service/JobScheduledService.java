@@ -1,7 +1,6 @@
 package com.team01.carsharingapp.service;
 
 import com.team01.carsharingapp.dto.payment.PaymentDto;
-import com.team01.carsharingapp.dto.stripe.StripeDto;
 import com.team01.carsharingapp.model.Payment;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ public class JobScheduledService {
         List<PaymentDto> allPayments = paymentService.getAllPayments();
         for (PaymentDto paymentDto : allPayments) {
             String sessionId = paymentDto.getSessionId();
-            if(stripeService.isExpired(sessionId)) {
+            if (stripeService.isExpired(sessionId)) {
                 Payment paymentBySessionId = paymentService.getPaymentBySessionId(sessionId);
                 paymentBySessionId.setStatus(Payment.Status.EXPIRED);
                 paymentService.save(paymentBySessionId);

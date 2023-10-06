@@ -36,9 +36,9 @@ public class PaymentServiceImpl implements PaymentService {
                         () -> new EntityNotFoundException("Rental with id: "
                         + requestDto.rentalId() + " not exist")
         );
-        List<Payment> allPaymentByUserId = paymentRepository.findAllByUserId(rentalById.getUser().getId());
-        if (!allPaymentByUserId.isEmpty())
-        {
+        List<Payment> allPaymentByUserId = paymentRepository
+                .findAllByUserId(rentalById.getUser().getId());
+        if (!allPaymentByUserId.isEmpty()) {
             for (Payment currentPayment : allPaymentByUserId) {
                 if (currentPayment.getStatus() == Payment.Status.PENDING) {
                     throw new PaymentException("You must pay previous rental - "
