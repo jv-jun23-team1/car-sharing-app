@@ -13,11 +13,13 @@ import com.team01.carsharingapp.mapper.PaymentMapper;
 import com.team01.carsharingapp.model.Car;
 import com.team01.carsharingapp.model.Payment;
 import com.team01.carsharingapp.model.Rental;
+import com.team01.carsharingapp.model.User;
 import com.team01.carsharingapp.repository.PaymentRepository;
 import com.team01.carsharingapp.repository.RentalRepository;
 import com.team01.carsharingapp.service.impl.PaymentServiceImpl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -45,6 +47,8 @@ public class PaymentServiceTests {
     @BeforeAll
     static void setUp() {
         VALID_RENTAL.setId(1L);
+        VALID_RENTAL.setUser(new User());
+        VALID_RENTAL.getUser().setId(1L);
         VALID_RENTAL.setCar(new Car());
         VALID_RENTAL.getCar().setDailyFee(BigDecimal.valueOf(20));
         VALID_RENTAL.setRentalDate(LocalDate.now());
@@ -64,6 +68,7 @@ public class PaymentServiceTests {
         PaymentRequestDto requestDto = new PaymentRequestDto(rentalId, type);
 
         when(rentalRepository.findByIdWithFetch(anyLong())).thenReturn(Optional.of(VALID_RENTAL));
+        when(paymentRepository.findAllByUserId(anyLong())).thenReturn(new ArrayList<>());
         when(paymentMapper.toEntity(requestDto)).thenReturn(VALID_PAYMENT);
         when(stripeService.pay(VALID_PAYMENT, "usd")).thenReturn(stripeDto);
         when(paymentRepository.save(VALID_PAYMENT)).thenReturn(VALID_PAYMENT);
@@ -101,6 +106,7 @@ public class PaymentServiceTests {
         PaymentRequestDto requestDto = new PaymentRequestDto(rentalId, type);
 
         when(rentalRepository.findByIdWithFetch(rentalId)).thenReturn(Optional.of(VALID_RENTAL));
+        when(paymentRepository.findAllByUserId(anyLong())).thenReturn(new ArrayList<>());
         when(paymentMapper.toEntity(requestDto)).thenReturn(VALID_PAYMENT);
         when(stripeService.pay(VALID_PAYMENT, "usd")).thenReturn(null);
 
@@ -115,6 +121,7 @@ public class PaymentServiceTests {
         PaymentRequestDto requestDto = new PaymentRequestDto(rentalId, type);
 
         when(rentalRepository.findByIdWithFetch(rentalId)).thenReturn(Optional.of(VALID_RENTAL));
+        when(paymentRepository.findAllByUserId(anyLong())).thenReturn(new ArrayList<>());
         when(paymentMapper.toEntity(requestDto)).thenReturn(VALID_PAYMENT);
         when(stripeService.pay(VALID_PAYMENT, "usd")).thenReturn(new StripeDto());
         assertThrows(NullPointerException.class,
