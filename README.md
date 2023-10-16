@@ -20,7 +20,7 @@ Our robust and secure application, built on the **Java Spring Boot framework**, 
 
 ## 👨‍💻Tech stack
 
-Here's a brief high-level overview of the tech stack the **BookStore API** uses:
+Here's a brief high-level overview of the tech stack the **Car sharing service API** uses:
 
 - [Spring Boot](https://spring.io/projects/spring-boot): provides a set of pre-built templates and conventions for creating stand-alone, production-grade Spring-based applications.
 - [Spring Security](https://docs.spring.io/spring-security/reference/index.html): provides features like authentication, authorization, and protection against common security threats.
