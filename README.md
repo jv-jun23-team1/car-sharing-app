@@ -99,7 +99,7 @@ To simplify the testing process, we've prepared a Postman [collection](src/main/
 
 ## 🧑Contribution
 
-We welcome contributions from the community to enhance the Bookstore project. Whether you want to fix a bug, improve an existing feature, or propose a new one, your contributions are valuable to us.
+We welcome contributions from the community to enhance the car sharing service project. Whether you want to fix a bug, improve an existing feature, or propose a new one, your contributions are valuable to us.
 
 ## 🏁Conclusion:
 
